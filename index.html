@@ -1,219 +1,2487 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Advanced Cursor Creator</title>
-<style>
-:root{
-  --bg:#0b0f12; --panel:#0f1417; --muted:#9aa5b1; --accent:#6ee7b7; --glass:rgba(255,255,255,0.03);
-  --glass-2:rgba(255,255,255,0.02); --glass-3:rgba(255,255,255,0.015);
-}
-html,body{
-  height:100%; margin:0;
-  background:linear-gradient(180deg,#050708 0%,var(--bg) 100%);
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono","Fira Code",monospace;
-  color:#e6eef3; cursor:none;
-}
-.app{display:grid;grid-template-columns:380px 1fr;gap:28px;min-height:100vh;padding:32px;}
-.sidebar{background:linear-gradient(180deg,var(--panel),rgba(16,20,24,0.8));border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(2,6,8,0.6);backdrop-filter:blur(6px);}
-.brand{font-size:20px;font-weight:700;letter-spacing:0.6px;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
-.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#72f2c3,#5db2ff);display:grid;place-items:center;color:#071018;font-weight:800;}
-.desc{color:var(--muted);font-size:13px;line-height:1.45;margin-bottom:18px;}
-.section{margin-top:18px}
-.section label{display:block;margin-bottom:6px;color:var(--muted);font-size:13px;}
-.section input[type="range"], .section input[type="color"], .section select, .section input[type="text"]{
-  width:100%;padding:6px;border-radius:6px;border:1px solid var(--glass-2);background:transparent;color:inherit;
-}
-button.downloadBtn{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#5db2ff);color:#071018;font-weight:700;cursor:pointer;margin-top:10px;width:100%}
-.main{padding:24px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02),0 8px 40px rgba(2,6,8,0.6);position:relative;overflow:hidden;}
-.preview-area{position:relative;width:100%;height:100%;border-radius:12px;overflow:hidden;background:rgba(255,255,255,0.01);}
-.cursor-preview{position:absolute;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
-.trail{position:absolute;pointer-events:none;z-index:999;transform:translate(-50%,-50%);opacity:0.4;}
-footer{color:var(--muted);font-size:13px;margin-top:20px;}
-@media (max-width:980px){.app{grid-template-columns:1fr;padding:18px}.sidebar{order:2}.main{order:1}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Web Toolkit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --info-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f8f9fa;
+            --card-bg: #1e1e1e;
+            --border-color: #444;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="high-contrast"] {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --card-bg: #000000;
+            --border-color: #ffffff;
+            --primary-color: #ffff00;
+            --secondary-color: #00ffff;
+            --shadow: 0 0 10px #ffff00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        .container-fluid {
+            padding: 0;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: calc(100vh - 140px);
+            padding: 2rem 0;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            border-color: var(--primary-color);
+            color: var(--text-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .navbar-nav {
+                margin-top: 1rem;
+            }
+        }
+
+        /* Calculator Styles */
+        .calculator {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .calc-display {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: right;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calc-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .calc-btn.operator {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .calc-btn.equals {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* Todo List Styles */
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        /* Drawing Canvas */
+        .drawing-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .drawing-tool {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .drawing-tool.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #drawingCanvas {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: white;
+            cursor: crosshair;
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Terminal Styles */
+        .terminal {
+            background-color: var(--dark-color);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .terminal-input {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .terminal-prompt {
+            color: #00ff00;
+            margin-right: 5px;
+        }
+
+        .terminal-input-field {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            outline: none;
+            flex-grow: 1;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* File Manager */
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .file-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .file-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Media Player */
+        .media-player {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 5px;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            width: 0%;
+        }
+
+        /* Tabs */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-button.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            padding: 20px 0;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="logo">CC</div>Cursor Creator</div>
-    <div class="desc">Design powerful custom cursors with animations, trails, and click effects. Live preview included.</div>
+    <!-- Header with Navigation -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-toolbox me-2"></i>Web Toolkit
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-section="home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="calculators">Calculators</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="productivity">Productivity</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="media">Media</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="utilities">Utilities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="settings">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-    <div class="section">
-      <label for="cursorType">Cursor Shape</label>
-      <select id="cursorType">
-        <option value="circle">Circle</option>
-        <option value="square">Square</option>
-        <option value="triangle">Triangle</option>
-        <option value="star">Star</option>
-        <option value="image">Custom Image</option>
-      </select>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Home Section -->
+            <section id="home" class="section active">
+                <div class="row">
+                    <div class="col-12 text-center mb-5">
+                        <h1 class="display-4 mb-3">All-in-One Web Toolkit</h1>
+                        <p class="lead">A comprehensive collection of web utilities and tools in a single, self-contained application.</p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-calculator me-2"></i>Calculators
+                            </div>
+                            <div class="card-body">
+                                <p>Standard and scientific calculators with advanced functions.</p>
+                                <a href="#" class="btn btn-primary" data-section="calculators">Open Calculators</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-tasks me-2"></i>Productivity
+                            </div>
+                            <div class="card-body">
+                                <p>To-do lists, note-taking, timers, and task management tools.</p>
+                                <a href="#" class="btn btn-primary" data-section="productivity">Open Tools</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-photo-video me-2"></i>Media
+                            </div>
+                            <div class="card-body">
+                                <p>Image gallery, drawing tools, audio and video players.</p>
+                                <a href="#" class="btn btn-primary" data-section="media">Open Media</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-tools me-2"></i>Utilities
+                            </div>
+                            <div class="card-body">
+                                <p>Unit converters, file manager, terminal, and data visualization.</p>
+                                <a href="#" class="btn btn-primary" data-section="utilities">Open Utilities</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-database me-2"></i>Storage
+                            </div>
+                            <div class="card-body">
+                                <p>Save, load, and manage your data with localStorage integration.</p>
+                                <a href="#" class="btn btn-primary" data-section="storage">Manage Data</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </div>
+                            <div class="card-body">
+                                <p>Customize appearance, themes, and application preferences.</p>
+                                <a href="#" class="btn btn-primary" data-section="settings">Open Settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calculators Section -->
+            <section id="calculators" class="section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4">Calculators</h2>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Standard Calculator
+                            </div>
+                            <div class="card-body">
+                                <div class="calculator">
+                                    <div class="calc-display" id="calcDisplay">0</div>
+                                    <div class="calc-buttons">
+                                        <button class="calc-btn" data-value="C">C</button>
+                                        <button class="calc-btn" data-value="±">±</button>
+                                        <button class="calc-btn" data-value="%">%</button>
+                                        <button class="calc-btn operator" data-value="/">/</button>
+                                        
+                                        <button class="calc-btn" data-value="7">7</button>
+                                        <button class="calc-btn" data-value="8">8</button>
+                                        <button class="calc-btn" data-value="9">9</button>
+                                        <button class="calc-btn operator" data-value="*">×</button>
+                                        
+                                        <button class="calc-btn" data-value="4">4</button>
+                                        <button class="calc-btn" data-value="5">5</button>
+                                        <button class="calc-btn" data-value="6">6</button>
+                                        <button class="calc-btn operator" data-value="-">-</button>
+                                        
+                                        <button class="calc-btn" data-value="1">1</button>
+                                        <button class="calc-btn" data-value="2">2</button>
+                                        <button class="calc-btn" data-value="3">3</button>
+                                        <button class="calc-btn operator" data-value="+">+</button>
+                                        
+                                        <button class="calc-btn" data-value="0">0</button>
+                                        <button class="calc-btn" data-value=".">.</button>
+                                        <button class="calc-btn equals" data-value="=">=</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Scientific Calculator
+                            </div>
+                            <div class="card-body">
+                                <div class="calculator">
+                                    <div class="calc-display" id="sciCalcDisplay">0</div>
+                                    <div class="calc-buttons">
+                                        <button class="calc-btn" data-value="sin">sin</button>
+                                        <button class="calc-btn" data-value="cos">cos</button>
+                                        <button class="calc-btn" data-value="tan">tan</button>
+                                        <button class="calc-btn operator" data-value="^">^</button>
+                                        
+                                        <button class="calc-btn" data-value="log">log</button>
+                                        <button class="calc-btn" data-value="ln">ln</button>
+                                        <button class="calc-btn" data-value="√">√</button>
+                                        <button class="calc-btn operator" data-value="!">!</button>
+                                        
+                                        <button class="calc-btn" data-value="(">(</button>
+                                        <button class="calc-btn" data-value=")">)</button>
+                                        <button class="calc-btn" data-value="π">π</button>
+                                        <button class="calc-btn operator" data-value="e">e</button>
+                                        
+                                        <button class="calc-btn" data-value="7">7</button>
+                                        <button class="calc-btn" data-value="8">8</button>
+                                        <button class="calc-btn" data-value="9">9</button>
+                                        <button class="calc-btn operator" data-value="/">/</button>
+                                        
+                                        <button class="calc-btn" data-value="4">4</button>
+                                        <button class="calc-btn" data-value="5">5</button>
+                                        <button class="calc-btn" data-value="6">6</button>
+                                        <button class="calc-btn operator" data-value="*">×</button>
+                                        
+                                        <button class="calc-btn" data-value="1">1</button>
+                                        <button class="calc-btn" data-value="2">2</button>
+                                        <button class="calc-btn" data-value="3">3</button>
+                                        <button class="calc-btn operator" data-value="-">-</button>
+                                        
+                                        <button class="calc-btn" data-value="0">0</button>
+                                        <button class="calc-btn" data-value=".">.</button>
+                                        <button class="calc-btn equals" data-value="=">=</button>
+                                        <button class="calc-btn operator" data-value="+">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                Unit Converter
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Conversion Type</label>
+                                        <select class="form-select" id="conversionType">
+                                            <option value="length">Length</option>
+                                            <option value="weight">Weight</option>
+                                            <option value="temperature">Temperature</option>
+                                            <option value="area">Area</option>
+                                            <option value="volume">Volume</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">From</label>
+                                        <select class="form-select" id="fromUnit"></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">To</label>
+                                        <select class="form-select" id="toUnit"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Value</label>
+                                        <input type="number" class="form-control" id="conversionValue" value="1">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Result</label>
+                                        <input type="text" class="form-control" id="conversionResult" readonly>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="convertBtn">Convert</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productivity Section -->
+            <section id="productivity" class="section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4">Productivity Tools</h2>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                To-Do List
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="todoInput" placeholder="Add a new task...">
+                                    <button class="btn btn-primary" id="addTodoBtn">Add</button>
+                                </div>
+                                <div id="todoList">
+                                    <!-- Todo items will be added here dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Note Taking
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="noteTitle" placeholder="Note title">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="noteContent" rows="10" placeholder="Start typing your note..."></textarea>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+                                    <button class="btn btn-outline-secondary" id="clearNoteBtn">Clear</button>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>Saved Notes</h5>
+                                    <div id="savedNotesList">
+                                        <!-- Saved notes will be listed here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Timer & Stopwatch
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-container">
+                                    <div class="tab-buttons">
+                                        <button class="tab-button active" data-tab="timer">Timer</button>
+                                        <button class="tab-button" data-tab="stopwatch">Stopwatch</button>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="timer">
+                                            <div class="text-center mb-3">
+                                                <h2 id="timerDisplay">25:00</h2>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-4">
+                                                    <button class="btn btn-outline-primary w-100" id="timerMinus">-5 min</button>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button class="btn btn-primary w-100" id="timerStart">Start</button>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button class="btn btn-outline-primary w-100" id="timerPlus">+5 min</button>
+                                                </div>
+                                            </div>
+                                            <div class="text-center">
+                                                <button class="btn btn-danger" id="timerReset">Reset</button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="stopwatch">
+                                            <div class="text-center mb-3">
+                                                <h2 id="stopwatchDisplay">00:00:00</h2>
+                                            </div>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary" id="stopwatchStart">Start</button>
+                                                <button class="btn btn-warning" id="stopwatchPause">Pause</button>
+                                                <button class="btn btn-danger" id="stopwatchReset">Reset</button>
+                                            </div>
+                                            <div class="mt-3">
+                                                <h5>Laps</h5>
+                                                <div id="stopwatchLaps">
+                                                    <!-- Lap times will be added here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Drawing Canvas
+                            </div>
+                            <div class="card-body">
+                                <div class="drawing-tools">
+                                    <button class="drawing-tool active" data-tool="pencil">Pencil</button>
+                                    <button class="drawing-tool" data-tool="line">Line</button>
+                                    <button class="drawing-tool" data-tool="rectangle">Rectangle</button>
+                                    <button class="drawing-tool" data-tool="circle">Circle</button>
+                                    <button class="drawing-tool" data-tool="eraser">Eraser</button>
+                                    <input type="color" id="drawingColor" value="#000000">
+                                    <input type="range" id="drawingSize" min="1" max="20" value="3">
+                                    <button class="drawing-tool" id="clearCanvas">Clear</button>
+                                </div>
+                                <canvas id="drawingCanvas" width="600" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Media Section -->
+            <section id="media" class="section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4">Media Tools</h2>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Image Gallery
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" id="imageUpload" accept="image/*" multiple>
+                                </div>
+                                <div class="row" id="imageGallery">
+                                    <!-- Images will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Audio Player
+                            </div>
+                            <div class="card-body">
+                                <div class="media-player">
+                                    <div class="mb-3">
+                                        <input type="file" class="form-control" id="audioUpload" accept="audio/*">
+                                    </div>
+                                    <div class="text-center mb-3">
+                                        <h4 id="audioTitle">No audio selected</h4>
+                                    </div>
+                                    <div class="progress-container" id="audioProgressContainer">
+                                        <div class="progress-bar" id="audioProgressBar"></div>
+                                    </div>
+                                    <div class="player-controls">
+                                        <button class="player-btn" id="audioPrev">
+                                            <i class="fas fa-step-backward"></i>
+                                        </button>
+                                        <button class="player-btn" id="audioPlay">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="player-btn" id="audioNext">
+                                            <i class="fas fa-step-forward"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3 d-flex justify-content-between">
+                                        <span id="audioCurrentTime">00:00</span>
+                                        <span id="audioDuration">00:00</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <label class="form-label">Volume</label>
+                                        <input type="range" class="form-range" id="audioVolume" min="0" max="100" value="50">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                Video Player
+                            </div>
+                            <div class="card-body">
+                                <div class="media-player">
+                                    <div class="mb-3">
+                                        <input type="file" class="form-control" id="videoUpload" accept="video/*">
+                                    </div>
+                                    <video id="videoPlayer" class="w-100" controls style="display: none;"></video>
+                                    <div id="videoPlaceholder" class="text-center p-5 border rounded">
+                                        <i class="fas fa-video fa-3x mb-3 text-muted"></i>
+                                        <p>Upload a video to play</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Utilities Section -->
+            <section id="utilities" class="section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4">Utility Tools</h2>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                File Manager
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="newFileName" placeholder="New file name">
+                                        <button class="btn btn-primary" id="createFileBtn">Create File</button>
+                                    </div>
+                                </div>
+                                <div id="fileList">
+                                    <!-- Files will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Terminal
+                            </div>
+                            <div class="card-body">
+                                <div class="terminal" id="terminalOutput">
+                                    <div>Web Toolkit Terminal v1.0</div>
+                                    <div>Type 'help' for available commands</div>
+                                </div>
+                                <div class="terminal-input">
+                                    <span class="terminal-prompt">$</span>
+                                    <input type="text" class="terminal-input-field" id="terminalInput">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                Data Visualization
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <button class="btn btn-primary" id="generateChartBtn">Generate Random Data Chart</button>
+                                </div>
+                                <canvas id="dataChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                API Data Fetcher
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select class="form-select" id="apiSelector">
+                                        <option value="weather">Weather Data</option>
+                                        <option value="quotes">Random Quotes</option>
+                                        <option value="users">Random Users</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary mb-3" id="fetchApiBtn">Fetch Data</button>
+                                <div id="apiDataResult">
+                                    <!-- API data will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-4">Settings & Preferences</h2>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Appearance
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Theme</label>
+                                    <select class="form-select" id="themeSelector">
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="high-contrast">High Contrast</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Font Size</label>
+                                    <input type="range" class="form-range" id="fontSize" min="12" max="24" value="16">
+                                    <div class="text-center">
+                                        <span id="fontSizeValue">16px</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="animationsToggle" checked>
+                                        <label class="form-check-label" for="animationsToggle">Enable Animations</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                Data Management
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <p>Export all your data as a backup file:</p>
+                                    <button class="btn btn-primary w-100 mb-2" id="exportDataBtn">Export Data</button>
+                                </div>
+                                <div class="mb-3">
+                                    <p>Import data from a backup file:</p>
+                                    <input type="file" class="form-control mb-2" id="importDataFile" accept=".json">
+                                    <button class="btn btn-outline-primary w-100" id="importDataBtn">Import Data</button>
+                                </div>
+                                <div class="mb-3">
+                                    <p>Reset all application data:</p>
+                                    <button class="btn btn-danger w-100" id="resetDataBtn">Reset All Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-btn" id="themeToggle">
+            <i class="fas fa-palette"></i>
+        </button>
     </div>
 
-    <div class="section">
-      <label for="size">Size</label>
-      <input type="range" id="size" min="10" max="300" value="32">
-    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="mb-0">All-in-One Web Toolkit &copy; 2023 | All features work offline</p>
+        </div>
+    </footer>
 
-    <div class="section">
-      <label for="color">Color</label>
-      <input type="color" id="color" value="#6ee7b7">
-    </div>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Application State
+        const state = {
+            currentSection: 'home',
+            theme: 'light',
+            fontSize: 16,
+            animationsEnabled: true,
+            todos: [],
+            notes: {},
+            files: {},
+            timer: {
+                minutes: 25,
+                seconds: 0,
+                running: false,
+                interval: null
+            },
+            stopwatch: {
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0,
+                running: false,
+                interval: null,
+                laps: []
+            },
+            drawing: {
+                tool: 'pencil',
+                color: '#000000',
+                size: 3,
+                isDrawing: false,
+                lastX: 0,
+                lastY: 0
+            },
+            audio: {
+                currentTime: 0,
+                duration: 0,
+                playing: false,
+                volume: 0.5
+            }
+        };
 
-    <div class="section">
-      <label for="borderWidth">Border Width</label>
-      <input type="range" id="borderWidth" min="0" max="20" value="0">
-    </div>
+        // DOM Elements
+        const elements = {
+            // Navigation
+            navLinks: document.querySelectorAll('.nav-link'),
+            sections: document.querySelectorAll('.section'),
+            
+            // Theme
+            themeToggle: document.getElementById('themeToggle'),
+            themeSelector: document.getElementById('themeSelector'),
+            fontSize: document.getElementById('fontSize'),
+            fontSizeValue: document.getElementById('fontSizeValue'),
+            animationsToggle: document.getElementById('animationsToggle'),
+            
+            // Calculators
+            calcDisplay: document.getElementById('calcDisplay'),
+            sciCalcDisplay: document.getElementById('sciCalcDisplay'),
+            calcButtons: document.querySelectorAll('.calc-btn'),
+            
+            // Unit Converter
+            conversionType: document.getElementById('conversionType'),
+            fromUnit: document.getElementById('fromUnit'),
+            toUnit: document.getElementById('toUnit'),
+            conversionValue: document.getElementById('conversionValue'),
+            conversionResult: document.getElementById('conversionResult'),
+            convertBtn: document.getElementById('convertBtn'),
+            
+            // Productivity
+            todoInput: document.getElementById('todoInput'),
+            addTodoBtn: document.getElementById('addTodoBtn'),
+            todoList: document.getElementById('todoList'),
+            noteTitle: document.getElementById('noteTitle'),
+            noteContent: document.getElementById('noteContent'),
+            saveNoteBtn: document.getElementById('saveNoteBtn'),
+            clearNoteBtn: document.getElementById('clearNoteBtn'),
+            savedNotesList: document.getElementById('savedNotesList'),
+            
+            // Timer & Stopwatch
+            timerDisplay: document.getElementById('timerDisplay'),
+            timerStart: document.getElementById('timerStart'),
+            timerMinus: document.getElementById('timerMinus'),
+            timerPlus: document.getElementById('timerPlus'),
+            timerReset: document.getElementById('timerReset'),
+            stopwatchDisplay: document.getElementById('stopwatchDisplay'),
+            stopwatchStart: document.getElementById('stopwatchStart'),
+            stopwatchPause: document.getElementById('stopwatchPause'),
+            stopwatchReset: document.getElementById('stopwatchReset'),
+            stopwatchLaps: document.getElementById('stopwatchLaps'),
+            tabButtons: document.querySelectorAll('.tab-button'),
+            tabPanes: document.querySelectorAll('.tab-pane'),
+            
+            // Drawing
+            drawingTools: document.querySelectorAll('.drawing-tool'),
+            drawingCanvas: document.getElementById('drawingCanvas'),
+            drawingColor: document.getElementById('drawingColor'),
+            drawingSize: document.getElementById('drawingSize'),
+            clearCanvas: document.getElementById('clearCanvas'),
+            
+            // Media
+            imageUpload: document.getElementById('imageUpload'),
+            imageGallery: document.getElementById('imageGallery'),
+            audioUpload: document.getElementById('audioUpload'),
+            audioTitle: document.getElementById('audioTitle'),
+            audioProgressBar: document.getElementById('audioProgressBar'),
+            audioProgressContainer: document.getElementById('audioProgressContainer'),
+            audioPlay: document.getElementById('audioPlay'),
+            audioPrev: document.getElementById('audioPrev'),
+            audioNext: document.getElementById('audioNext'),
+            audioCurrentTime: document.getElementById('audioCurrentTime'),
+            audioDuration: document.getElementById('audioDuration'),
+            audioVolume: document.getElementById('audioVolume'),
+            videoUpload: document.getElementById('videoUpload'),
+            videoPlayer: document.getElementById('videoPlayer'),
+            videoPlaceholder: document.getElementById('videoPlaceholder'),
+            
+            // Utilities
+            newFileName: document.getElementById('newFileName'),
+            createFileBtn: document.getElementById('createFileBtn'),
+            fileList: document.getElementById('fileList'),
+            terminalOutput: document.getElementById('terminalOutput'),
+            terminalInput: document.getElementById('terminalInput'),
+            generateChartBtn: document.getElementById('generateChartBtn'),
+            dataChart: document.getElementById('dataChart'),
+            apiSelector: document.getElementById('apiSelector'),
+            fetchApiBtn: document.getElementById('fetchApiBtn'),
+            apiDataResult: document.getElementById('apiDataResult'),
+            
+            // Data Management
+            exportDataBtn: document.getElementById('exportDataBtn'),
+            importDataFile: document.getElementById('importDataFile'),
+            importDataBtn: document.getElementById('importDataBtn'),
+            resetDataBtn: document.getElementById('resetDataBtn')
+        };
 
-    <div class="section">
-      <label for="borderColor">Border Color</label>
-      <input type="color" id="borderColor" value="#ffffff">
-    </div>
+        // Initialize the application
+        function init() {
+            loadState();
+            setupEventListeners();
+            updateUI();
+            renderTodos();
+            renderNotes();
+            renderFiles();
+            setupDrawingCanvas();
+            setupUnitConverter();
+        }
 
-    <div class="section">
-      <label for="shadow">Shadow / Glow</label>
-      <input type="range" id="shadow" min="0" max="50" value="5">
-    </div>
+        // Load application state from localStorage
+        function loadState() {
+            const savedState = localStorage.getItem('webToolkitState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                Object.assign(state, parsedState);
+            }
+            
+            // Apply saved theme and settings
+            document.body.setAttribute('data-theme', state.theme);
+            elements.themeSelector.value = state.theme;
+            elements.fontSize.value = state.fontSize;
+            elements.fontSizeValue.textContent = `${state.fontSize}px`;
+            document.body.style.fontSize = `${state.fontSize}px`;
+            elements.animationsToggle.checked = state.animationsEnabled;
+            
+            if (!state.animationsEnabled) {
+                document.body.classList.add('no-animations');
+            }
+        }
 
-    <div class="section">
-      <label for="trailType">Trail Effect</label>
-      <select id="trailType">
-        <option value="none">None</option>
-        <option value="fade">Fade</option>
-        <option value="blur">Blur</option>
-        <option value="gradient">Gradient</option>
-      </select>
-    </div>
+        // Save application state to localStorage
+        function saveState() {
+            localStorage.setItem('webToolkitState', JSON.stringify(state));
+        }
 
-    <div class="section" id="imageSection" style="display:none">
-      <label for="imageUrl">Image URL</label>
-      <input type="text" id="imageUrl" placeholder="Paste image URL here">
-    </div>
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Navigation
+            elements.navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    showSection(section);
+                    
+                    // Update active nav link
+                    elements.navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+            
+            // Theme and settings
+            elements.themeToggle.addEventListener('click', toggleTheme);
+            elements.themeSelector.addEventListener('change', (e) => {
+                state.theme = e.target.value;
+                document.body.setAttribute('data-theme', state.theme);
+                saveState();
+            });
+            
+            elements.fontSize.addEventListener('input', (e) => {
+                state.fontSize = parseInt(e.target.value);
+                elements.fontSizeValue.textContent = `${state.fontSize}px`;
+                document.body.style.fontSize = `${state.fontSize}px`;
+                saveState();
+            });
+            
+            elements.animationsToggle.addEventListener('change', (e) => {
+                state.animationsEnabled = e.target.checked;
+                if (state.animationsEnabled) {
+                    document.body.classList.remove('no-animations');
+                } else {
+                    document.body.classList.add('no-animations');
+                }
+                saveState();
+            });
+            
+            // Calculators
+            elements.calcButtons.forEach(button => {
+                button.addEventListener('click', handleCalculatorButton);
+            });
+            
+            // Unit Converter
+            elements.conversionType.addEventListener('change', updateUnitOptions);
+            elements.convertBtn.addEventListener('click', performConversion);
+            
+            // Productivity
+            elements.addTodoBtn.addEventListener('click', addTodo);
+            elements.todoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTodo();
+            });
+            elements.saveNoteBtn.addEventListener('click', saveNote);
+            elements.clearNoteBtn.addEventListener('click', clearNote);
+            
+            // Timer & Stopwatch
+            elements.timerStart.addEventListener('click', toggleTimer);
+            elements.timerMinus.addEventListener('click', () => adjustTimer(-5));
+            elements.timerPlus.addEventListener('click', () => adjustTimer(5));
+            elements.timerReset.addEventListener('click', resetTimer);
+            elements.stopwatchStart.addEventListener('click', toggleStopwatch);
+            elements.stopwatchPause.addEventListener('click', pauseStopwatch);
+            elements.stopwatchReset.addEventListener('click', resetStopwatch);
+            
+            // Tabs
+            elements.tabButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const tab = e.target.getAttribute('data-tab');
+                    switchTab(tab);
+                });
+            });
+            
+            // Drawing
+            elements.drawingTools.forEach(tool => {
+                tool.addEventListener('click', (e) => {
+                    if (e.target.id !== 'clearCanvas') {
+                        elements.drawingTools.forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        state.drawing.tool = e.target.getAttribute('data-tool');
+                    }
+                });
+            });
+            
+            elements.drawingColor.addEventListener('change', (e) => {
+                state.drawing.color = e.target.value;
+            });
+            
+            elements.drawingSize.addEventListener('input', (e) => {
+                state.drawing.size = parseInt(e.target.value);
+            });
+            
+            elements.clearCanvas.addEventListener('click', clearDrawingCanvas);
+            
+            // Media
+            elements.imageUpload.addEventListener('change', handleImageUpload);
+            elements.audioUpload.addEventListener('change', handleAudioUpload);
+            elements.audioPlay.addEventListener('click', toggleAudioPlayback);
+            elements.audioPrev.addEventListener('click', playPreviousAudio);
+            elements.audioNext.addEventListener('click', playNextAudio);
+            elements.audioVolume.addEventListener('input', adjustAudioVolume);
+            elements.audioProgressContainer.addEventListener('click', seekAudio);
+            elements.videoUpload.addEventListener('change', handleVideoUpload);
+            
+            // Utilities
+            elements.createFileBtn.addEventListener('click', createFile);
+            elements.terminalInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') executeTerminalCommand();
+            });
+            elements.generateChartBtn.addEventListener('click', generateRandomChart);
+            elements.fetchApiBtn.addEventListener('click', fetchApiData);
+            
+            // Data Management
+            elements.exportDataBtn.addEventListener('click', exportData);
+            elements.importDataBtn.addEventListener('click', importData);
+            elements.resetDataBtn.addEventListener('click', resetData);
+        }
 
-    <div class="section">
-      <label for="clickEffect">Click Effect</label>
-      <select id="clickEffect">
-        <option value="none">None</option>
-        <option value="ripple">Ripple</option>
-        <option value="spark">Spark</option>
-        <option value="pulse">Pulse</option>
-      </select>
-    </div>
+        // Update UI based on current state
+        function updateUI() {
+            // Update timer display
+            updateTimerDisplay();
+            
+            // Update stopwatch display
+            updateStopwatchDisplay();
+        }
 
-    <div class="section">
-      <label for="clickSound">Click Sound</label>
-      <input type="text" id="clickSound" placeholder="Paste sound URL (optional)">
-    </div>
+        // Section Navigation
+        function showSection(sectionId) {
+            elements.sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            state.currentSection = sectionId;
+        }
 
-    <button class="downloadBtn" id="downloadPNG">Download PNG</button>
-    <button class="downloadBtn" id="downloadCSS">Download CSS</button>
-    <button class="downloadBtn" id="downloadJS">Download JS</button>
+        // Theme Toggle
+        function toggleTheme() {
+            const themes = ['light', 'dark', 'high-contrast'];
+            const currentIndex = themes.indexOf(state.theme);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            state.theme = themes[nextIndex];
+            document.body.setAttribute('data-theme', state.theme);
+            elements.themeSelector.value = state.theme;
+            saveState();
+        }
 
-    <footer>Made for GitHub Pages • No server required</footer>
-  </aside>
+        // Calculator Functions
+        function handleCalculatorButton(e) {
+            const value = e.target.getAttribute('data-value');
+            const display = e.target.closest('.calculator').querySelector('.calc-display');
+            
+            if (value === 'C') {
+                display.textContent = '0';
+            } else if (value === '=') {
+                try {
+                    // Replace display symbols with JavaScript operators
+                    let expression = display.textContent
+                        .replace(/×/g, '*')
+                        .replace(/÷/g, '/')
+                        .replace(/π/g, Math.PI)
+                        .replace(/e/g, Math.E);
+                    
+                    // Handle scientific functions
+                    expression = expression
+                        .replace(/sin\(/g, 'Math.sin(')
+                        .replace(/cos\(/g, 'Math.cos(')
+                        .replace(/tan\(/g, 'Math.tan(')
+                        .replace(/log\(/g, 'Math.log10(')
+                        .replace(/ln\(/g, 'Math.log(')
+                        .replace(/√\(/g, 'Math.sqrt(')
+                        .replace(/\^/g, '**')
+                        .replace(/!/g, ''); // Factorial not implemented
+                    
+                    display.textContent = eval(expression) || '0';
+                } catch (error) {
+                    display.textContent = 'Error';
+                }
+            } else if (value === '±') {
+                display.textContent = display.textContent.startsWith('-') 
+                    ? display.textContent.substring(1) 
+                    : '-' + display.textContent;
+            } else {
+                if (display.textContent === '0' || display.textContent === 'Error') {
+                    display.textContent = value;
+                } else {
+                    display.textContent += value;
+                }
+            }
+        }
 
-  <main class="main">
-    <div class="toolbar">
-      <div>
-        <div class="title">Live Preview</div>
-        <div class="sub">Move your mouse inside this area to see your cursor in real-time.</div>
-      </div>
-    </div>
-    <div class="preview-area" id="previewArea"></div>
-  </main>
-</div>
+        // Unit Converter Functions
+        function setupUnitConverter() {
+            updateUnitOptions();
+        }
 
-<script>
-const cursorType=document.getElementById('cursorType');
-const sizeInput=document.getElementById('size');
-const colorInput=document.getElementById('color');
-const borderWidth=document.getElementById('borderWidth');
-const borderColor=document.getElementById('borderColor');
-const shadowInput=document.getElementById('shadow');
-const trailType=document.getElementById('trailType');
-const imageUrl=document.getElementById('imageUrl');
-const imageSection=document.getElementById('imageSection');
-const clickEffect=document.getElementById('clickEffect');
-const clickSound=document.getElementById('clickSound');
+        function updateUnitOptions() {
+            const type = elements.conversionType.value;
+            let units = [];
+            
+            switch(type) {
+                case 'length':
+                    units = ['meter', 'kilometer', 'centimeter', 'millimeter', 'mile', 'yard', 'foot', 'inch'];
+                    break;
+                case 'weight':
+                    units = ['kilogram', 'gram', 'milligram', 'pound', 'ounce'];
+                    break;
+                case 'temperature':
+                    units = ['celsius', 'fahrenheit', 'kelvin'];
+                    break;
+                case 'area':
+                    units = ['square meter', 'square kilometer', 'square mile', 'square foot', 'acre', 'hectare'];
+                    break;
+                case 'volume':
+                    units = ['liter', 'milliliter', 'gallon', 'quart', 'pint', 'cup'];
+                    break;
+            }
+            
+            // Clear and repopulate unit selects
+            elements.fromUnit.innerHTML = '';
+            elements.toUnit.innerHTML = '';
+            
+            units.forEach(unit => {
+                const fromOption = document.createElement('option');
+                fromOption.value = unit;
+                fromOption.textContent = unit;
+                elements.fromUnit.appendChild(fromOption);
+                
+                const toOption = document.createElement('option');
+                toOption.value = unit;
+                toOption.textContent = unit;
+                elements.toUnit.appendChild(toOption);
+            });
+            
+            // Set different default to units
+            if (type === 'length') {
+                elements.toUnit.value = 'kilometer';
+            } else if (type === 'weight') {
+                elements.toUnit.value = 'pound';
+            } else if (type === 'temperature') {
+                elements.toUnit.value = 'fahrenheit';
+            }
+        }
 
-const previewArea=document.getElementById('previewArea');
-let cursorEl=document.createElement('div');
-cursorEl.className='cursor-preview';
-previewArea.appendChild(cursorEl);
+        function performConversion() {
+            const value = parseFloat(elements.conversionValue.value);
+            const fromUnit = elements.fromUnit.value;
+            const toUnit = elements.toUnit.value;
+            const type = elements.conversionType.value;
+            
+            if (isNaN(value)) {
+                elements.conversionResult.value = 'Invalid input';
+                return;
+            }
+            
+            let result;
+            
+            // Conversion logic for different unit types
+            switch(type) {
+                case 'length':
+                    result = convertLength(value, fromUnit, toUnit);
+                    break;
+                case 'weight':
+                    result = convertWeight(value, fromUnit, toUnit);
+                    break;
+                case 'temperature':
+                    result = convertTemperature(value, fromUnit, toUnit);
+                    break;
+                case 'area':
+                    result = convertArea(value, fromUnit, toUnit);
+                    break;
+                case 'volume':
+                    result = convertVolume(value, fromUnit, toUnit);
+                    break;
+            }
+            
+            elements.conversionResult.value = result.toFixed(4);
+        }
 
-let trailElements=[];
+        function convertLength(value, fromUnit, toUnit) {
+            // Convert to meters first
+            let meters;
+            switch(fromUnit) {
+                case 'meter': meters = value; break;
+                case 'kilometer': meters = value * 1000; break;
+                case 'centimeter': meters = value / 100; break;
+                case 'millimeter': meters = value / 1000; break;
+                case 'mile': meters = value * 1609.34; break;
+                case 'yard': meters = value * 0.9144; break;
+                case 'foot': meters = value * 0.3048; break;
+                case 'inch': meters = value * 0.0254; break;
+            }
+            
+            // Convert from meters to target unit
+            switch(toUnit) {
+                case 'meter': return meters;
+                case 'kilometer': return meters / 1000;
+                case 'centimeter': return meters * 100;
+                case 'millimeter': return meters * 1000;
+                case 'mile': return meters / 1609.34;
+                case 'yard': return meters / 0.9144;
+                case 'foot': return meters / 0.3048;
+                case 'inch': return meters / 0.0254;
+            }
+        }
 
-function drawCursorShape(el){
-  const type=cursorType.value;
-  const s=sizeInput.value;
-  const c=colorInput.value;
-  const bw=borderWidth.value;
-  const bc=borderColor.value;
-  const sh=shadowInput.value;
+        function convertWeight(value, fromUnit, toUnit) {
+            // Convert to kilograms first
+            let kilograms;
+            switch(fromUnit) {
+                case 'kilogram': kilograms = value; break;
+                case 'gram': kilograms = value / 1000; break;
+                case 'milligram': kilograms = value / 1000000; break;
+                case 'pound': kilograms = value * 0.453592; break;
+                case 'ounce': kilograms = value * 0.0283495; break;
+            }
+            
+            // Convert from kilograms to target unit
+            switch(toUnit) {
+                case 'kilogram': return kilograms;
+                case 'gram': return kilograms * 1000;
+                case 'milligram': return kilograms * 1000000;
+                case 'pound': return kilograms / 0.453592;
+                case 'ounce': return kilograms / 0.0283495;
+            }
+        }
 
-  el.style.width=s+'px';
-  el.style.height=s+'px';
-  el.style.background=type==='image'?`url(${imageUrl.value}) center/contain no-repeat` : c;
-  el.style.borderRadius=type==='circle'?'50%':type==='square'?'0':'0';
-  el.style.border=bw+'px solid '+bc;
-  el.style.boxShadow=sh>0?`0 0 ${sh}px ${c}`:'none';
-}
+        function convertTemperature(value, fromUnit, toUnit) {
+            // Convert to Celsius first
+            let celsius;
+            switch(fromUnit) {
+                case 'celsius': celsius = value; break;
+                case 'fahrenheit': celsius = (value - 32) * 5/9; break;
+                case 'kelvin': celsius = value - 273.15; break;
+            }
+            
+            // Convert from Celsius to target unit
+            switch(toUnit) {
+                case 'celsius': return celsius;
+                case 'fahrenheit': return (celsius * 9/5) + 32;
+                case 'kelvin': return celsius + 273.15;
+            }
+        }
 
-function handleTrail(x,y){
-  if(trailType.value==='none') return;
-  const t=document.createElement('div');
-  t.className='trail';
-  drawCursorShape(t);
-  t.style.left=x+'px';
-  t.style.top=y+'px';
-  if(trailType.value==='blur') t.style.filter='blur(4px)';
-  if(trailType.value==='gradient') t.style.background='linear-gradient(45deg,#6ee7b7,#5db2ff)';
-  previewArea.appendChild(t);
-  trailElements.push(t);
-  setTimeout(()=>{previewArea.removeChild(t); trailElements.shift()},trailType.value==='fade'?400:800);
-}
+        function convertArea(value, fromUnit, toUnit) {
+            // Convert to square meters first
+            let sqMeters;
+            switch(fromUnit) {
+                case 'square meter': sqMeters = value; break;
+                case 'square kilometer': sqMeters = value * 1000000; break;
+                case 'square mile': sqMeters = value * 2589988.11; break;
+                case 'square foot': sqMeters = value * 0.092903; break;
+                case 'acre': sqMeters = value * 4046.86; break;
+                case 'hectare': sqMeters = value * 10000; break;
+            }
+            
+            // Convert from square meters to target unit
+            switch(toUnit) {
+                case 'square meter': return sqMeters;
+                case 'square kilometer': return sqMeters / 1000000;
+                case 'square mile': return sqMeters / 2589988.11;
+                case 'square foot': return sqMeters / 0.092903;
+                case 'acre': return sqMeters / 4046.86;
+                case 'hectare': return sqMeters / 10000;
+            }
+        }
 
-previewArea.addEventListener('mousemove',e=>{
-  const rect=previewArea.getBoundingClientRect();
-  const x=e.clientX-rect.left;
-  const y=e.clientY-rect.top;
-  cursorEl.style.left=x+'px';
-  cursorEl.style.top=y+'px';
-  handleTrail(x,y);
-});
+        function convertVolume(value, fromUnit, toUnit) {
+            // Convert to liters first
+            let liters;
+            switch(fromUnit) {
+                case 'liter': liters = value; break;
+                case 'milliliter': liters = value / 1000; break;
+                case 'gallon': liters = value * 3.78541; break;
+                case 'quart': liters = value * 0.946353; break;
+                case 'pint': liters = value * 0.473176; break;
+                case 'cup': liters = value * 0.24; break;
+            }
+            
+            // Convert from liters to target unit
+            switch(toUnit) {
+                case 'liter': return liters;
+                case 'milliliter': return liters * 1000;
+                case 'gallon': return liters / 3.78541;
+                case 'quart': return liters / 0.946353;
+                case 'pint': return liters / 0.473176;
+                case 'cup': return liters / 0.24;
+            }
+        }
 
-previewArea.addEventListener('click',e=>{
-  const effect=clickEffect.value;
-  if(effect!=='none'){
-    const s=sizeInput.value;
-    const effectEl=document.createElement('div');
-    effectEl.style.position='absolute';
-    effectEl.style.left=(e.clientX-previewArea.getBoundingClientRect().left)+'px';
-    effectEl.style.top=(e.clientY-previewArea.getBoundingClientRect().top)+'px';
-    effectEl.style.width=s+'px';
-    effectEl.style.height=s+'px';
-    effectEl.style.borderRadius='50%';
-    effectEl.style.background=effect==='spark'?'yellow':colorInput.value;
-    effectEl.style.opacity='0.8';
-    effectEl.style.pointerEvents='none';
-    previewArea.appendChild(effectEl);
-    setTimeout(()=>previewArea.removeChild(effectEl),500);
-  }
-  if(clickSound.value){
-    const audio=new Audio(clickSound.value); audio.play();
-  }
-});
+        // Todo List Functions
+        function addTodo() {
+            const text = elements.todoInput.value.trim();
+            if (text) {
+                state.todos.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                });
+                elements.todoInput.value = '';
+                renderTodos();
+                saveState();
+            }
+        }
 
-cursorType.addEventListener('change',()=>{
-  imageSection.style.display=cursorType.value==='image'?'block':'none';
-  drawCursorShape(cursorEl);
-});
-[sizeInput,colorInput,borderWidth,borderColor,shadowInput,imageUrl].forEach(i=>i.addEventListener('input',()=>drawCursorShape(cursorEl)));
+        function toggleTodo(id) {
+            const todo = state.todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderTodos();
+                saveState();
+            }
+        }
 
-drawCursorShape(cursorEl);
+        function deleteTodo(id) {
+            state.todos = state.todos.filter(t => t.id !== id);
+            renderTodos();
+            saveState();
+        }
 
-// Download functionality omitted for brevity but can be added same as before
-</script>
+        function renderTodos() {
+            elements.todoList.innerHTML = '';
+            
+            if (state.todos.length === 0) {
+                elements.todoList.innerHTML = '<p class="text-muted text-center">No tasks yet. Add one above!</p>';
+                return;
+            }
+            
+            state.todos.forEach(todo => {
+                const todoItem = document.createElement('div');
+                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                todoItem.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''}>
+                    <span class="todo-text">${todo.text}</span>
+                    <button class="btn btn-sm btn-outline-danger delete-todo">Delete</button>
+                `;
+                
+                const checkbox = todoItem.querySelector('input');
+                checkbox.addEventListener('change', () => toggleTodo(todo.id));
+                
+                const deleteBtn = todoItem.querySelector('.delete-todo');
+                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+                
+                elements.todoList.appendChild(todoItem);
+            });
+        }
+
+        // Note Taking Functions
+        function saveNote() {
+            const title = elements.noteTitle.value.trim();
+            const content = elements.noteContent.value.trim();
+            
+            if (title && content) {
+                state.notes[title] = content;
+                renderNotes();
+                clearNoteForm();
+                saveState();
+            } else {
+                alert('Please enter both a title and content for your note.');
+            }
+        }
+
+        function clearNote() {
+            clearNoteForm();
+        }
+
+        function clearNoteForm() {
+            elements.noteTitle.value = '';
+            elements.noteContent.value = '';
+        }
+
+        function loadNote(title) {
+            if (state.notes[title]) {
+                elements.noteTitle.value = title;
+                elements.noteContent.value = state.notes[title];
+            }
+        }
+
+        function deleteNote(title) {
+            delete state.notes[title];
+            renderNotes();
+            saveState();
+        }
+
+        function renderNotes() {
+            elements.savedNotesList.innerHTML = '';
+            
+            const noteTitles = Object.keys(state.notes);
+            if (noteTitles.length === 0) {
+                elements.savedNotesList.innerHTML = '<p class="text-muted">No saved notes yet.</p>';
+                return;
+            }
+            
+            noteTitles.forEach(title => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
+                noteItem.innerHTML = `
+                    <span class="fw-bold">${title}</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary load-note me-1">Load</button>
+                        <button class="btn btn-sm btn-outline-danger delete-note">Delete</button>
+                    </div>
+                `;
+                
+                const loadBtn = noteItem.querySelector('.load-note');
+                loadBtn.addEventListener('click', () => loadNote(title));
+                
+                const deleteBtn = noteItem.querySelector('.delete-note');
+                deleteBtn.addEventListener('click', () => deleteNote(title));
+                
+                elements.savedNotesList.appendChild(noteItem);
+            });
+        }
+
+        // Timer Functions
+        function toggleTimer() {
+            if (state.timer.running) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            state.timer.running = true;
+            elements.timerStart.textContent = 'Pause';
+            elements.timerStart.classList.remove('btn-primary');
+            elements.timerStart.classList.add('btn-warning');
+            
+            state.timer.interval = setInterval(() => {
+                if (state.timer.seconds > 0) {
+                    state.timer.seconds--;
+                } else if (state.timer.minutes > 0) {
+                    state.timer.minutes--;
+                    state.timer.seconds = 59;
+                } else {
+                    // Timer finished
+                    clearInterval(state.timer.interval);
+                    state.timer.running = false;
+                    elements.timerStart.textContent = 'Start';
+                    elements.timerStart.classList.remove('btn-warning');
+                    elements.timerStart.classList.add('btn-primary');
+                    alert('Timer finished!');
+                    return;
+                }
+                
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            state.timer.running = false;
+            clearInterval(state.timer.interval);
+            elements.timerStart.textContent = 'Start';
+            elements.timerStart.classList.remove('btn-warning');
+            elements.timerStart.classList.add('btn-primary');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            state.timer.minutes = 25;
+            state.timer.seconds = 0;
+            updateTimerDisplay();
+        }
+
+        function adjustTimer(minutes) {
+            if (!state.timer.running) {
+                state.timer.minutes = Math.max(0, state.timer.minutes + minutes);
+                updateTimerDisplay();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = state.timer.minutes.toString().padStart(2, '0');
+            const seconds = state.timer.seconds.toString().padStart(2, '0');
+            elements.timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+
+        // Stopwatch Functions
+        function toggleStopwatch() {
+            if (state.stopwatch.running) {
+                pauseStopwatch();
+            } else {
+                startStopwatch();
+            }
+        }
+
+        function startStopwatch() {
+            state.stopwatch.running = true;
+            elements.stopwatchStart.textContent = 'Pause';
+            elements.stopwatchStart.classList.remove('btn-primary');
+            elements.stopwatchStart.classList.add('btn-warning');
+            
+            state.stopwatch.interval = setInterval(() => {
+                state.stopwatch.milliseconds += 10;
+                
+                if (state.stopwatch.milliseconds >= 1000) {
+                    state.stopwatch.milliseconds = 0;
+                    state.stopwatch.seconds++;
+                }
+                
+                if (state.stopwatch.seconds >= 60) {
+                    state.stopwatch.seconds = 0;
+                    state.stopwatch.minutes++;
+                }
+                
+                if (state.stopwatch.minutes >= 60) {
+                    state.stopwatch.minutes = 0;
+                    state.stopwatch.hours++;
+                }
+                
+                updateStopwatchDisplay();
+            }, 10);
+        }
+
+        function pauseStopwatch() {
+            state.stopwatch.running = false;
+            clearInterval(state.stopwatch.interval);
+            elements.stopwatchStart.textContent = 'Resume';
+            elements.stopwatchStart.classList.remove('btn-warning');
+            elements.stopwatchStart.classList.add('btn-primary');
+        }
+
+        function resetStopwatch() {
+            pauseStopwatch();
+            state.stopwatch.hours = 0;
+            state.stopwatch.minutes = 0;
+            state.stopwatch.seconds = 0;
+            state.stopwatch.milliseconds = 0;
+            state.stopwatch.laps = [];
+            updateStopwatchDisplay();
+            renderStopwatchLaps();
+        }
+
+        function updateStopwatchDisplay() {
+            const hours = state.stopwatch.hours.toString().padStart(2, '0');
+            const minutes = state.stopwatch.minutes.toString().padStart(2, '0');
+            const seconds = state.stopwatch.seconds.toString().padStart(2, '0');
+            elements.stopwatchDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function renderStopwatchLaps() {
+            elements.stopwatchLaps.innerHTML = '';
+            
+            if (state.stopwatch.laps.length === 0) {
+                elements.stopwatchLaps.innerHTML = '<p class="text-muted">No laps recorded.</p>';
+                return;
+            }
+            
+            state.stopwatch.laps.forEach((lap, index) => {
+                const lapItem = document.createElement('div');
+                lapItem.className = 'd-flex justify-content-between border-bottom py-1';
+                lapItem.innerHTML = `
+                    <span>Lap ${index + 1}</span>
+                    <span>${lap}</span>
+                `;
+                elements.stopwatchLaps.appendChild(lapItem);
+            });
+        }
+
+        // Tab Functions
+        function switchTab(tabId) {
+            // Update tab buttons
+            elements.tabButtons.forEach(button => {
+                if (button.getAttribute('data-tab') === tabId) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // Update tab panes
+            elements.tabPanes.forEach(pane => {
+                if (pane.id === tabId) {
+                    pane.classList.add('active');
+                } else {
+                    pane.classList.remove('active');
+                }
+            });
+        }
+
+        // Drawing Functions
+        function setupDrawingCanvas() {
+            const canvas = elements.drawingCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Mouse event listeners
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch event listeners for mobile
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            state.drawing.isDrawing = true;
+            const canvas = elements.drawingCanvas;
+            const rect = canvas.getBoundingClientRect();
+            state.drawing.lastX = e.clientX - rect.left;
+            state.drawing.lastY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+            if (!state.drawing.isDrawing) return;
+            
+            const canvas = elements.drawingCanvas;
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            ctx.strokeStyle = state.drawing.color;
+            ctx.lineWidth = state.drawing.size;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(state.drawing.lastX, state.drawing.lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            state.drawing.lastX = currentX;
+            state.drawing.lastY = currentY;
+        }
+
+        function stopDrawing() {
+            state.drawing.isDrawing = false;
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            elements.drawingCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            elements.drawingCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearDrawingCanvas() {
+            const canvas = elements.drawingCanvas;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Media Functions
+        function handleImageUpload(e) {
+            const files = e.target.files;
+            if (!files.length) return;
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'col-md-4 mb-3';
+                    imgContainer.innerHTML = `
+                        <div class="card">
+                            <img src="${e.target.result}" class="card-img-top" alt="${file.name}">
+                            <div class="card-body">
+                                <p class="card-text">${file.name}</p>
+                            </div>
+                        </div>
+                    `;
+                    elements.imageGallery.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        function handleAudioUpload(e) {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('audio/')) return;
+            
+            const url = URL.createObjectURL(file);
+            const audio = new Audio(url);
+            
+            // Store audio element in state
+            state.audio.element = audio;
+            state.audio.title = file.name;
+            
+            // Update UI
+            elements.audioTitle.textContent = file.name;
+            
+            // Set up audio event listeners
+            audio.addEventListener('loadedmetadata', () => {
+                state.audio.duration = audio.duration;
+                updateAudioDurationDisplay();
+            });
+            
+            audio.addEventListener('timeupdate', () => {
+                state.audio.currentTime = audio.currentTime;
+                updateAudioProgress();
+                updateAudioCurrentTimeDisplay();
+            });
+            
+            audio.addEventListener('ended', () => {
+                state.audio.playing = false;
+                updateAudioPlayButton();
+            });
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        function toggleAudioPlayback() {
+            if (!state.audio.element) return;
+            
+            if (state.audio.playing) {
+                state.audio.element.pause();
+                state.audio.playing = false;
+            } else {
+                state.audio.element.play();
+                state.audio.playing = true;
+            }
+            
+            updateAudioPlayButton();
+        }
+
+        function playPreviousAudio() {
+            // Implementation for playlist - for now just restart current audio
+            if (state.audio.element) {
+                state.audio.element.currentTime = 0;
+                if (!state.audio.playing) {
+                    state.audio.element.play();
+                    state.audio.playing = true;
+                    updateAudioPlayButton();
+                }
+            }
+        }
+
+        function playNextAudio() {
+            // Implementation for playlist - for now just restart current audio
+            playPreviousAudio();
+        }
+
+        function adjustAudioVolume(e) {
+            if (state.audio.element) {
+                state.audio.volume = e.target.value / 100;
+                state.audio.element.volume = state.audio.volume;
+            }
+        }
+
+        function seekAudio(e) {
+            if (!state.audio.element) return;
+            
+            const progressContainer = elements.audioProgressContainer;
+            const clickX = e.offsetX;
+            const width = progressContainer.offsetWidth;
+            const percent = clickX / width;
+            
+            state.audio.element.currentTime = percent * state.audio.duration;
+        }
+
+        function updateAudioPlayButton() {
+            const icon = elements.audioPlay.querySelector('i');
+            if (state.audio.playing) {
+                icon.className = 'fas fa-pause';
+            } else {
+                icon.className = 'fas fa-play';
+            }
+        }
+
+        function updateAudioProgress() {
+            if (!state.audio.element) return;
+            
+            const percent = (state.audio.currentTime / state.audio.duration) * 100;
+            elements.audioProgressBar.style.width = `${percent}%`;
+        }
+
+        function updateAudioDurationDisplay() {
+            const minutes = Math.floor(state.audio.duration / 60);
+            const seconds = Math.floor(state.audio.duration % 60);
+            elements.audioDuration.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateAudioCurrentTimeDisplay() {
+            const minutes = Math.floor(state.audio.currentTime / 60);
+            const seconds = Math.floor(state.audio.currentTime % 60);
+            elements.audioCurrentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function handleVideoUpload(e) {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('video/')) return;
+            
+            const url = URL.createObjectURL(file);
+            elements.videoPlayer.src = url;
+            elements.videoPlayer.style.display = 'block';
+            elements.videoPlaceholder.style.display = 'none';
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        // File Manager Functions
+        function createFile() {
+            const fileName = elements.newFileName.value.trim();
+            if (!fileName) {
+                alert('Please enter a file name');
+                return;
+            }
+            
+            state.files[fileName] = {
+                name: fileName,
+                content: '',
+                type: 'text',
+                created: new Date().toISOString()
+            };
+            
+            elements.newFileName.value = '';
+            renderFiles();
+            saveState();
+        }
+
+        function deleteFile(fileName) {
+            delete state.files[fileName];
+            renderFiles();
+            saveState();
+        }
+
+        function renderFiles() {
+            elements.fileList.innerHTML = '';
+            
+            const fileNames = Object.keys(state.files);
+            if (fileNames.length === 0) {
+                elements.fileList.innerHTML = '<p class="text-muted text-center">No files yet. Create one above!</p>';
+                return;
+            }
+            
+            fileNames.forEach(fileName => {
+                const file = state.files[fileName];
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta text-muted">Created: ${new Date(file.created).toLocaleString()}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-outline-primary edit-file">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger delete-file">Delete</button>
+                    </div>
+                `;
+                
+                const deleteBtn = fileItem.querySelector('.delete-file');
+                deleteBtn.addEventListener('click', () => deleteFile(fileName));
+                
+                elements.fileList.appendChild(fileItem);
+            });
+        }
+
+        // Terminal Functions
+        function executeTerminalCommand() {
+            const command = elements.terminalInput.value.trim();
+            if (!command) return;
+            
+            // Add command to terminal output
+            addTerminalOutput(`$ ${command}`);
+            
+            // Process command
+            const parts = command.split(' ');
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+            
+            let output = '';
+            
+            switch(cmd) {
+                case 'help':
+                    output = `Available commands:
+- help: Show this help message
+- clear: Clear the terminal
+- date: Show current date and time
+- echo [text]: Print text to terminal
+- ls: List files
+- theme [light|dark|high-contrast]: Change theme`;
+                    break;
+                    
+                case 'clear':
+                    elements.terminalOutput.innerHTML = '';
+                    elements.terminalInput.value = '';
+                    return;
+                    
+                case 'date':
+                    output = new Date().toString();
+                    break;
+                    
+                case 'echo':
+                    output = args.join(' ');
+                    break;
+                    
+                case 'ls':
+                    const fileNames = Object.keys(state.files);
+                    output = fileNames.length > 0 ? fileNames.join('\n') : 'No files';
+                    break;
+                    
+                case 'theme':
+                    if (args.length === 0) {
+                        output = `Current theme: ${state.theme}`;
+                    } else {
+                        const theme = args[0];
+                        if (['light', 'dark', 'high-contrast'].includes(theme)) {
+                            state.theme = theme;
+                            document.body.setAttribute('data-theme', state.theme);
+                            elements.themeSelector.value = state.theme;
+                            output = `Theme changed to ${theme}`;
+                            saveState();
+                        } else {
+                            output = `Invalid theme. Available: light, dark, high-contrast`;
+                        }
+                    }
+                    break;
+                    
+                default:
+                    output = `Command not found: ${cmd}. Type 'help' for available commands.`;
+            }
+            
+            if (output) {
+                addTerminalOutput(output);
+            }
+            
+            elements.terminalInput.value = '';
+            elements.terminalOutput.scrollTop = elements.terminalOutput.scrollHeight;
+        }
+
+        function addTerminalOutput(text) {
+            const outputLine = document.createElement('div');
+            outputLine.textContent = text;
+            elements.terminalOutput.appendChild(outputLine);
+        }
+
+        // Data Visualization Functions
+        function generateRandomChart() {
+            const ctx = elements.dataChart.getContext('2d');
+            
+            // Generate random data
+            const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+            const data = labels.map(() => Math.floor(Math.random() * 100));
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Random Data',
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Random Data Visualization'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // API Functions
+        async function fetchApiData() {
+            const apiType = elements.apiSelector.value;
+            let url, dataKey;
+            
+            switch(apiType) {
+                case 'weather':
+                    // Using a free weather API (example with static data since we can't rely on CORS)
+                    displayApiResult('Weather data is simulated in this demo. In a real application, this would fetch live weather data from an API.');
+                    return;
+                    
+                case 'quotes':
+                    url = 'https://api.quotable.io/random';
+                    dataKey = 'content';
+                    break;
+                    
+                case 'users':
+                    url = 'https://randomuser.me/api/';
+                    dataKey = 'results[0]';
+                    break;
+            }
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Extract the relevant data using the dataKey
+                let result = data;
+                dataKey.split('.').forEach(key => {
+                    if (key.includes('[') && key.includes(']')) {
+                        const arrayKey = key.split('[')[0];
+                        const index = parseInt(key.split('[')[1].split(']')[0]);
+                        result = result[arrayKey][index];
+                    } else {
+                        result = result[key];
+                    }
+                });
+                
+                displayApiResult(JSON.stringify(result, null, 2));
+            } catch (error) {
+                displayApiResult(`Error fetching data: ${error.message}`);
+            }
+        }
+
+        function displayApiResult(result) {
+            elements.apiDataResult.innerHTML = `<pre>${result}</pre>`;
+        }
+
+        // Data Management Functions
+        function exportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'web-toolkit-backup.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const file = elements.importDataFile.files[0];
+            if (!file) {
+                alert('Please select a file to import');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    Object.assign(state, importedState);
+                    saveState();
+                    location.reload(); // Reload to apply imported state
+                } catch (error) {
+                    alert('Error importing data: Invalid file format');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                localStorage.removeItem('webToolkitState');
+                location.reload();
+            }
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
