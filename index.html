@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Secure Password Generator</title>
+    <title>Advanced Password Generator</title>
     <style>
         :root {
             --bg: #0b0f12;
             --panel: #0f1417;
             --muted: #9aa5b1;
             --accent: #6ee7b7;
+            --accent2: #5db2ff;
             --glass: rgba(255,255,255,0.03);
             --glass-2: rgba(255,255,255,0.02);
             --glass-3: rgba(255,255,255,0.015);
@@ -67,6 +68,44 @@
             line-height: 1.45;
         }
 
+        .controls {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .control-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-2);
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 13px;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
         .timer {
             margin-top: 18px;
             text-align: center;
@@ -93,7 +132,7 @@
             padding: 14px;
             border-radius: 10px;
             border: none;
-            background: linear-gradient(90deg, var(--accent), #5db2ff);
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
             color: #071018;
             font-weight: 700;
             cursor: pointer;
@@ -141,6 +180,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 18px;
         }
 
         .title {
@@ -154,7 +194,6 @@
         }
 
         .passwords-container {
-            margin-top: 18px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 14px;
@@ -175,7 +214,7 @@
         }
 
         .password-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             margin-bottom: 10px;
             color: var(--accent);
@@ -185,6 +224,7 @@
             background: rgba(0,0,0,0.2);
             border-radius: 8px;
             font-family: 'Courier New', monospace;
+            word-break: break-all;
         }
 
         .password-actions {
@@ -261,10 +301,30 @@
         <aside class="sidebar">
             <div class="brand">
                 <div class="logo">SP</div>
-                Secure Password Generator
+                Advanced Password Generator
             </div>
             <div class="desc">
-                Generate secure temporary passwords for account creation. Each batch expires after 120 seconds for maximum security.
+                Generate secure temporary passwords with customizable expiration time. Choose between regular passwords or global keys.
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-label">Password Type</div>
+                    <select id="passwordType">
+                        <option value="regular">Regular Passwords</option>
+                        <option value="global">Global Keys</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Number to Generate</div>
+                    <input type="number" id="passwordCount" min="1" max="50" value="10">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Expiration Time (seconds)</div>
+                    <input type="number" id="expirationTime" min="30" max="600" value="120">
+                </div>
             </div>
             
             <div class="timer">
@@ -275,11 +335,12 @@
             <button class="generateBtn" id="generateBtn">Generate Passwords</button>
             
             <div class="hint">
-                Each generation creates 10 unique passwords in format: AB12-CD34-EF56-GH78
+                Regular format: AB12-CD34-EF56-GH78<br>
+                Global key format: AB-AB12-CD34-EF56-GH78
             </div>
             
             <div class="links">
-                <div class="chip">Secure • Temporary</div>
+                <div class="chip">Secure • Customizable</div>
                 <div class="chip">Auto-expire</div>
             </div>
             
@@ -312,32 +373,58 @@
         const passwordsContainer = document.getElementById('passwordsContainer');
         const status = document.getElementById('status');
         const statusMessage = document.getElementById('statusMessage');
+        const passwordType = document.getElementById('passwordType');
+        const passwordCount = document.getElementById('passwordCount');
+        const expirationTime = document.getElementById('expirationTime');
         
         // Application State
         let timerInterval = null;
-        let timeRemaining = 120; // 2 minutes in seconds
+        let timeRemaining = 120;
         let passwords = [];
         let passwordsExpired = false;
         
         // Event Listeners
         generateBtn.addEventListener('click', generatePasswords);
         
-        // Generate 10 passwords in the format AB12-CD34-EF56-GH78
+        // Update timer display when expiration time changes
+        expirationTime.addEventListener('input', updateTimerDisplayFromInput);
+        
+        // Generate passwords based on user settings
         function generatePasswords() {
+            // Get user settings
+            const count = parseInt(passwordCount.value) || 10;
+            const expiration = parseInt(expirationTime.value) || 120;
+            const type = passwordType.value;
+            
+            // Validate inputs
+            if (count < 1 || count > 50) {
+                alert('Please enter a number between 1 and 50 for password count');
+                return;
+            }
+            
+            if (expiration < 30 || expiration > 600) {
+                alert('Please enter an expiration time between 30 and 600 seconds');
+                return;
+            }
+            
             // Reset timer and state
             clearInterval(timerInterval);
-            timeRemaining = 120;
+            timeRemaining = expiration;
             passwordsExpired = false;
             
             // Update UI
-            status.textContent = 'Active (2:00)';
+            status.textContent = `Active (${formatTime(timeRemaining)})`;
             statusMessage.textContent = 'Passwords are active and can be used';
             generateBtn.disabled = true;
             
             // Generate passwords
             passwords = [];
-            for (let i = 0; i < 10; i++) {
-                passwords.push(generatePassword());
+            for (let i = 0; i < count; i++) {
+                if (type === 'global') {
+                    passwords.push(generateGlobalKey());
+                } else {
+                    passwords.push(generatePassword());
+                }
             }
             
             // Display passwords
@@ -352,7 +439,7 @@
             }, 1000);
         }
         
-        // Generate a single password in the format AB12-CD34-EF56-GH78
+        // Generate a regular password in the format AB12-CD34-EF56-GH78
         function generatePassword() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const digits = '0123456789';
@@ -379,9 +466,47 @@
             return password;
         }
         
+        // Generate a global key in the format AB-AB12-CD34-EF56-GH78
+        function generateGlobalKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const digits = '0123456789';
+            let key = '';
+            
+            // First part: two letters followed by a dash
+            for (let i = 0; i < 2; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            key += '-';
+            
+            // Generate 4 groups of 4 characters each (2 letters + 2 digits)
+            for (let i = 0; i < 4; i++) {
+                // First two characters: random uppercase letters
+                for (let j = 0; j < 2; j++) {
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                
+                // Next two characters: random digits
+                for (let j = 0; j < 2; j++) {
+                    key += digits.charAt(Math.floor(Math.random() * digits.length));
+                }
+                
+                // Add dash separator (except for the last group)
+                if (i < 3) {
+                    key += '-';
+                }
+            }
+            
+            return key;
+        }
+        
         // Display passwords in the UI
         function renderPasswords() {
             passwordsContainer.innerHTML = '';
+            
+            if (passwords.length === 0) {
+                passwordsContainer.innerHTML = '<div class="password-card">No passwords generated yet</div>';
+                return;
+            }
             
             passwords.forEach((password, index) => {
                 const passwordCard = document.createElement('div');
@@ -475,20 +600,31 @@
         
         // Update the timer display
         function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerDisplay.textContent = formatTime(timeRemaining);
             
             // Update status with time remaining
             if (timeRemaining > 0) {
-                status.textContent = `Active (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+                status.textContent = `Active (${formatTime(timeRemaining)})`;
             }
+        }
+        
+        // Update timer display based on input value
+        function updateTimerDisplayFromInput() {
+            const expiration = parseInt(expirationTime.value) || 120;
+            timerDisplay.textContent = formatTime(expiration);
+        }
+        
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
         
         // Initialize the application
         function init() {
             // Set initial state
-            updateTimerDisplay();
+            updateTimerDisplayFromInput();
         }
         
         // Start the application
