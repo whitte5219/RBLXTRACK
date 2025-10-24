@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Roblox User Inspector</title>
+  <style>
+    :root{
+      --bg:#0b0f12; --panel:#0f1417; --muted:#9aa5b1; --accent:#6ee7b7; --glass:rgba(255,255,255,0.03);
+      --glass-2:rgba(255,255,255,0.02); --glass-3:rgba(255,255,255,0.015);
+      font-synthesis: none;
+    }
+    /* full-screen layout */
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#050708 0%,var(--bg) 100%);font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Fira Code", monospace;color:#e6eef3}
+    .app{min-height:100vh;display:grid;grid-template-columns:380px 1fr;gap:28px;padding:32px}
+
+    /* left sidebar */
+    .sidebar{background:linear-gradient(180deg,var(--panel),rgba(16,20,24,0.8));border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(2,6,8,0.6);backdrop-filter:blur(6px)}
+    .brand{font-size:20px;font-weight:700;letter-spacing:0.6px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#72f2c3,#5db2ff);display:grid;place-items:center;color:#071018;font-weight:800}
+    .desc{color:var(--muted);font-size:13px;line-height:1.45}
+
+    .searchBox{margin-top:18px;display:flex;gap:10px}
+    input[type="text"]{flex:1;padding:12px 14px;border-radius:10px;border:1px solid var(--glass-2);background:transparent;color:inherit;outline:none;font-size:14px}
+    button.searchBtn{padding:12px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#5db2ff);color:#071018;font-weight:700;cursor:pointer}
+
+    .hint{margin-top:12px;font-size:12px;color:var(--muted)}
+    .links{display:flex;gap:8px;margin-top:18px}
+    .chip{padding:8px 10px;border-radius:10px;background:var(--glass);font-size:13px}
+
+    /* main area */
+    .main{padding:24px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02),0 8px 40px rgba(2,6,8,0.6)}
+    .toolbar{display:flex;justify-content:space-between;align-items:center}
+    .title{font-size:20px;font-weight:700}
+    .sub{color:var(--muted);font-size:13px}
+
+    .card{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,var(--glass-2),transparent);display:flex;gap:18px;align-items:center}
+    .avatar{width:120px;height:120px;border-radius:12px;background:var(--glass);display:grid;place-items:center;overflow:hidden}
+    .meta{flex:1}
+    .name{font-size:20px;font-weight:800}
+    .displayName{color:var(--accent);font-weight:700}
+    .metaRow{margin-top:10px;color:var(--muted);font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+
+    .stats{display:flex;gap:12px;margin-top:12px}
+    .stat{padding:10px;border-radius:10px;background:var(--glass-3);min-width:110px;text-align:center}
+    .stat b{display:block;font-size:18px}
+
+    .groups{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+    .group{padding:8px 10px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));font-size:13px}
+
+    .raw{margin-top:20px;background:rgba(0,0,0,0.25);padding:12px;border-radius:8px;font-family:monospace;font-size:12px;color:#cfe7d9;overflow:auto;max-height:220px}
+
+    footer{color:var(--muted);font-size:13px;margin-top:20px}
+
+    /* responsive */
+    @media (max-width:980px){.app{grid-template-columns:1fr;padding:18px}.sidebar{order:2}.main{order:1}}
+
+    /* subtle animations */
+    .card, .sidebar, .main{transition:transform .28s cubic-bezier(.2,.9,.25,1),box-shadow .28s}
+    button.searchBtn:active{transform:translateY(1px)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">RI</div>Roblox Inspector</div>
+      <div class="desc">Search Roblox users quickly and inspect public data using official Roblox APIs. Paste a numeric ID or a username and press Search.</div>
+
+      <div class="searchBox">
+        <input id="q" type="text" placeholder="User ID or username (e.g. 123456 or Builderman)" />
+        <button class="searchBtn" id="go">Search</button>
+      </div>
+      <div class="hint">Try: <span class="chip">1 (Roblox founder)</span> <span class="chip">Builderman</span></div>
+      <div class="links">
+        <div class="chip">Dark • Minimal</div>
+        <div class="chip">Full-screen</div>
+      </div>
+      <footer>Made for GitHub Pages • No server required</footer>
+    </aside>
+
+    <main class="main">
+      <div class="toolbar">
+        <div>
+          <div class="title">User Search</div>
+          <div class="sub">Results appear here. Data pulled from Roblox public APIs when available.</div>
+        </div>
+        <div id="status" class="sub">Idle</div>
+      </div>
+
+      <div id="resultContainer"></div>
+    </main>
+  </div>
+
+  <script>
+    const q = document.getElementById('q');
+    const go = document.getElementById('go');
+    const status = document.getElementById('status');
+    const container = document.getElementById('resultContainer');
+
+    go.addEventListener('click', ()=>performSearch(q.value));
+    q.addEventListener('keydown', e=>{ if(e.key==='Enter') performSearch(q.value); });
+
+    function setStatus(s){ status.textContent = s }
+
+    function clear(){ container.innerHTML = '' }
+
+    function el(tag,cls,inner){ const e=document.createElement(tag); if(cls) e.className=cls; if(inner!==undefined) e.innerHTML=inner; return e }
+
+    async function performSearch(raw){
+      clear();
+      const query = (raw||'').trim();
+      if(!query){ setStatus('Enter an ID or username'); return }
+      setStatus('Searching...');
+
+      // determine if it's numeric id
+      const isId = /^\d+$/.test(query);
+      try{
+        let user;
+        if(isId){
+          user = await fetchUserById(query);
+        } else {
+          user = await fetchUserByUsername(query);
+        }
+        if(!user){ setStatus('Not found'); container.innerHTML = '<div class="card">No user found.</div>'; return }
+        setStatus('Found user: '+user.name);
+        renderUser(user);
+      }catch(err){
+        console.error(err);
+        setStatus('Error — check console');
+        container.innerHTML = '<div class="card">Error fetching data. See console for details.</div>';
+      }
+    }
+
+    async function fetchUserById(id){
+      // official endpoint
+      const url = `https://users.roblox.com/v1/users/${id}`;
+      const res = await fetch(url);
+      if(!res.ok) return null;
+      const data = await res.json();
+      // fetch headshot
+      const thumb = await fetchThumbnail(id);
+      data.headshot = thumb;
+      // groups
+      try{
+        const g = await (await fetch(`https://groups.roblox.com/v1/users/${id}/groups/roles`)).json();
+        data.groups = g.data || [];
+      }catch(e){ data.groups = [] }
+      return data;
+    }
+
+    async function fetchUserByUsername(username){
+      // users.roblox.com accepts a POST to lookup usernames
+      const url = 'https://users.roblox.com/v1/usernames/users';
+      const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usernames:[username],excludeBannedUsers:false})});
+      if(!res.ok) return null;
+      const d = await res.json();
+      if(!d.data || d.data.length===0) return null;
+      const user = d.data[0];
+      // now fetch full user by id
+      return fetchUserById(user.id);
+    }
+
+    async function fetchThumbnail(id){
+      try{
+        const url = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${id}&size=420x420&format=Png&isCircular=false`;
+        const res = await fetch(url);
+        if(!res.ok) return null;
+        const json = await res.json();
+        return (json.data && json.data[0] && json.data[0].imageUrl) || null;
+      }catch(e){return null}
+    }
+
+    function renderUser(u){
+      const card = el('div','card');
+      const avatar = el('div','avatar');
+      const img = document.createElement('img');
+      img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+      img.alt = 'avatar';
+      img.src = u.headshot || `https://www.roblox.com/headshot-thumbnail/image?userId=${u.id}&width=420&height=420&format=png`;
+      avatar.appendChild(img);
+
+      const meta = el('div','meta');
+      const name = el('div','name',`${u.displayName ? `<span class="displayName">${escapeHtml(u.displayName)}</span> — `: '' }<span style="opacity:.95">${escapeHtml(u.name)}</span>`);
+      const metaRow = el('div','metaRow');
+      const created = new Date(u.created).toLocaleString();
+      metaRow.innerHTML = `ID: <b>${u.id}</b> • Created: <b>${created}</b>`;
+
+      const statsRow = el('div','stats');
+      const linkBtn = el('div','stat'); linkBtn.innerHTML = `<b>Open</b><div style="font-size:12px;margin-top:6px">Profile • Rolimons</div>`;
+      const profileLink = el('a','','Profile'); profileLink.href = `https://www.roblox.com/users/${u.id}/profile`; profileLink.target='_blank';
+      const rolimonsLink = el('a','','Rolimons'); rolimonsLink.href = `https://www.rolimons.com/player/${u.id}`; rolimonsLink.target='_blank';
+      const links = el('div'); links.appendChild(profileLink); links.appendChild(document.createTextNode(' • ')); links.appendChild(rolimonsLink);
+      linkBtn.appendChild(links);
+
+      const groupsBox = el('div'); groupsBox.className='groups';
+      if(u.groups && u.groups.length){
+        u.groups.slice(0,6).forEach(g=>{
+          const gg = el('div','group',`${escapeHtml(g.group.name)} (${escapeHtml(g.role.name)})`);
+          groupsBox.appendChild(gg);
+        })
+      } else {
+        groupsBox.innerHTML = '<div class="group">No public groups</div>';
+      }
+
+      const raw = el('pre','raw',escapeHtml(JSON.stringify(u,null,2)));
+
+      meta.appendChild(name);
+      meta.appendChild(metaRow);
+      meta.appendChild(statsRow);
+      meta.appendChild(groupsBox);
+
+      card.appendChild(avatar);
+      card.appendChild(meta);
+
+      container.appendChild(card);
+
+      // attach raw data block
+      container.appendChild(raw);
+
+      // add small note and quick action buttons
+      const note = el('div','card',`<div style="display:flex;justify-content:space-between;align-items:center;width:100%"><div><b>Quick actions</b><div style="color:var(--muted);font-size:13px;margin-top:6px">Open on external sites or copy ID</div></div><div style="display:flex;gap:8px"><button class="searchBtn" id="copy">Copy ID</button><button class="searchBtn" id="openR">Open Rolimons</button></div></div>`);
+      container.appendChild(note);
+
+      document.getElementById('copy').addEventListener('click',()=>{navigator.clipboard.writeText(String(u.id)); setStatus('Copied ID to clipboard')});
+      document.getElementById('openR').addEventListener('click',()=>window.open(`https://www.rolimons.com/player/${u.id}`,'_blank'));
+    }
+
+    function escapeHtml(s){ return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;'); }
+
+    // small UX: prefill with cursor focus
+    q.focus();
+  </script>
+</body>
+</html>
