@@ -14,6 +14,7 @@
             --glass: rgba(255,255,255,0.03);
             --glass-2: rgba(255,255,255,0.02);
             --glass-3: rgba(255,255,255,0.015);
+            --error: #f87171;
             font-synthesis: none;
         }
 
@@ -23,14 +24,206 @@
             background: linear-gradient(180deg, #050708 0%, var(--bg) 100%);
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Fira Code", monospace;
             color: #e6eef3;
+            overflow: hidden;
         }
 
+        /* Gate Styles */
+        .gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #050708 0%, var(--bg) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .gate-container {
+            background: linear-gradient(180deg, var(--panel), rgba(16,20,24,0.9));
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(2,6,8,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: gateAppear 0.8s ease 0.2s forwards;
+        }
+
+        @keyframes gateAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gate-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #72f2c3, #5db2ff);
+            display: grid;
+            place-items: center;
+            color: #071018;
+            font-weight: 800;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+
+        .gate-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gate-subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .gate-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .gate-input {
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-2);
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .gate-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.2);
+        }
+
+        .gate-input.error {
+            border-color: var(--error);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .robot-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--glass-2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .robot-check:hover {
+            background: rgba(110, 231, 183, 0.05);
+        }
+
+        .robot-check-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .robot-check-box.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .robot-check-box.checked::after {
+            content: "✓";
+            color: #071018;
+            font-weight: bold;
+        }
+
+        .robot-check-text {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .gate-button {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #071018;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            opacity: 0.7;
+        }
+
+        .gate-button.enabled {
+            opacity: 1;
+        }
+
+        .gate-button.enabled:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(110, 231, 183, 0.3);
+        }
+
+        .gate-error {
+            color: var(--error);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gate-error.show {
+            opacity: 1;
+        }
+
+        /* App Styles */
         .app {
             min-height: 100vh;
             display: grid;
             grid-template-columns: 380px 1fr;
             gap: 28px;
             padding: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .app.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .sidebar {
@@ -297,7 +490,30 @@
     </style>
 </head>
 <body>
-    <div class="app">
+    <!-- Gate Screen -->
+    <div class="gate" id="gate">
+        <div class="gate-container">
+            <div class="gate-logo">SP</div>
+            <h1 class="gate-title">Secure Password Generator</h1>
+            <p class="gate-subtitle">Enter the password and verify you're not a robot to access the application</p>
+            
+            <form class="gate-form" id="gateForm">
+                <input type="password" class="gate-input" id="gatePassword" placeholder="Enter access password" autocomplete="off">
+                
+                <div class="robot-check" id="robotCheck">
+                    <div class="robot-check-box" id="robotCheckBox"></div>
+                    <div class="robot-check-text">I'm not a robot</div>
+                </div>
+                
+                <button type="submit" class="gate-button" id="gateButton" disabled>Access Application</button>
+                
+                <div class="gate-error" id="gateError">Incorrect password or verification failed</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="app" id="app">
         <aside class="sidebar">
             <div class="brand">
                 <div class="logo">SP</div>
@@ -367,7 +583,17 @@
     </div>
 
     <script>
-        // DOM Elements
+        // Gate Elements
+        const gate = document.getElementById('gate');
+        const gateForm = document.getElementById('gateForm');
+        const gatePassword = document.getElementById('gatePassword');
+        const robotCheck = document.getElementById('robotCheck');
+        const robotCheckBox = document.getElementById('robotCheckBox');
+        const gateButton = document.getElementById('gateButton');
+        const gateError = document.getElementById('gateError');
+        
+        // App Elements
+        const app = document.getElementById('app');
         const generateBtn = document.getElementById('generateBtn');
         const timerDisplay = document.getElementById('timerDisplay');
         const passwordsContainer = document.getElementById('passwordsContainer');
@@ -382,8 +608,62 @@
         let timeRemaining = 120;
         let passwords = [];
         let passwordsExpired = false;
+        let robotVerified = false;
+        const correctPassword = "rbxkeysforever1";
         
-        // Event Listeners
+        // Gate Event Listeners
+        gateForm.addEventListener('submit', handleGateSubmit);
+        gatePassword.addEventListener('input', updateGateButton);
+        robotCheck.addEventListener('click', toggleRobotVerification);
+        
+        // Gate Functions
+        function handleGateSubmit(e) {
+            e.preventDefault();
+            
+            if (!robotVerified) {
+                showGateError("Please verify you're not a robot");
+                return;
+            }
+            
+            if (gatePassword.value !== correctPassword) {
+                showGateError("Incorrect password");
+                gatePassword.classList.add('error');
+                return;
+            }
+            
+            // Success - hide gate and show app
+            gate.classList.add('hidden');
+            setTimeout(() => {
+                app.classList.add('visible');
+            }, 300);
+        }
+        
+        function toggleRobotVerification() {
+            robotVerified = !robotVerified;
+            robotCheckBox.classList.toggle('checked', robotVerified);
+            updateGateButton();
+        }
+        
+        function updateGateButton() {
+            const passwordEntered = gatePassword.value.length > 0;
+            const canSubmit = passwordEntered && robotVerified;
+            
+            gateButton.disabled = !canSubmit;
+            gateButton.classList.toggle('enabled', canSubmit);
+            
+            // Clear error when user starts typing again
+            if (passwordEntered) {
+                gatePassword.classList.remove('error');
+                gateError.classList.remove('show');
+            }
+        }
+        
+        function showGateError(message) {
+            gateError.textContent = message;
+            gateError.classList.add('show');
+        }
+        
+        // App Event Listeners
         generateBtn.addEventListener('click', generatePasswords);
         
         // Update timer display when expiration time changes
@@ -625,6 +905,9 @@
         function init() {
             // Set initial state
             updateTimerDisplayFromInput();
+            
+            // Focus on password input
+            gatePassword.focus();
         }
         
         // Start the application
