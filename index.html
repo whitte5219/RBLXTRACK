@@ -15,6 +15,7 @@
             --glass-2: rgba(255,255,255,0.02);
             --glass-3: rgba(255,255,255,0.015);
             --error: #f87171;
+            --warning: #fbbf24;
             font-synthesis: none;
         }
 
@@ -207,6 +208,176 @@
 
         .gate-error.show {
             opacity: 1;
+        }
+
+        /* Admin Button */
+        .admin-btn {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: grid;
+            place-items: center;
+            color: #071018;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .admin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(110, 231, 183, 0.4);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 7, 8, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .admin-container {
+            background: linear-gradient(180deg, var(--panel), rgba(16,20,24,0.95));
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(2,6,8,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .admin-panel.active .admin-container {
+            transform: translateY(0);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .admin-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: var(--glass-2);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .admin-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--glass-2);
+        }
+
+        .admin-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .admin-key-display {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        .admin-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: var(--glass-3);
+            color: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-button.primary {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #071018;
+        }
+
+        .admin-button.danger {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+            color: white;
+        }
+
+        .admin-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .admin-auth {
+            text-align: center;
+        }
+
+        .admin-auth-input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-2);
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .admin-auth-input:focus {
+            border-color: var(--accent);
         }
 
         /* App Styles */
@@ -482,10 +653,25 @@
             .main {
                 order: 1;
             }
+            .admin-btn {
+                top: 18px;
+                right: 18px;
+            }
         }
 
         .card, .sidebar, .main {
             transition: transform .28s cubic-bezier(.2,.9,.25,1), box-shadow .28s;
+        }
+
+        .disabled-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .disabled-message h2 {
+            color: var(--warning);
+            margin-bottom: 16px;
         }
     </style>
 </head>
@@ -512,6 +698,48 @@
         </div>
     </div>
 
+    <!-- Admin Button -->
+    <div class="admin-btn" id="adminBtn" title="Admin Panel">
+        <i class="fas fa-star"></i>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <div class="admin-title">Administrator Panel</div>
+                <div class="admin-close" id="adminClose">✕</div>
+            </div>
+            
+            <div id="adminAuthSection" class="admin-section admin-auth">
+                <div class="admin-section-title">Admin Authentication</div>
+                <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
+                    To open the admin panel you must enter the admin security key
+                </p>
+                <input type="text" class="admin-auth-input" id="adminAuthInput" placeholder="Enter admin security key">
+                <div class="admin-buttons">
+                    <button class="admin-button primary" id="adminAuthButton">Authenticate</button>
+                </div>
+            </div>
+            
+            <div id="adminMainSection" class="admin-section" style="display: none;">
+                <div class="admin-section-title">Website Controls</div>
+                <div class="admin-buttons">
+                    <button class="admin-button danger" id="disableWebsiteBtn">Disable Website</button>
+                </div>
+            </div>
+            
+            <div id="adminKeySection" class="admin-section" style="display: none;">
+                <div class="admin-section-title">Security Key Management</div>
+                <div class="admin-key-display" id="currentKeyDisplay"></div>
+                <div class="admin-buttons">
+                    <button class="admin-button" id="copyKeyBtn">Copy Key</button>
+                    <button class="admin-button primary" id="generateKeyBtn">Generate New Key</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Application -->
     <div class="app" id="app">
         <aside class="sidebar">
@@ -529,6 +757,8 @@
                     <select id="passwordType">
                         <option value="regular">Regular Passwords</option>
                         <option value="global">Global Keys</option>
+                        <option value="executor">Executor Keys</option>
+                        <option value="numeral">Numeral Keys</option>
                     </select>
                 </div>
                 
@@ -552,7 +782,9 @@
             
             <div class="hint">
                 Regular format: AB12-CD34-EF56-GH78<br>
-                Global key format: AB-AB12-CD34-EF56-GH78
+                Global key format: AB-AB12-CD34-EF56-GH78<br>
+                Executor keys: F5xEVHNoFkoAjDIrBqCCp (max 3, 1hr)<br>
+                Numeral keys: 123456789012 (numbers only)
             </div>
             
             <div class="links">
@@ -582,6 +814,9 @@
         </main>
     </div>
 
+    <!-- Font Awesome for the star icon -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
     <script>
         // Gate Elements
         const gate = document.getElementById('gate');
@@ -591,6 +826,20 @@
         const robotCheckBox = document.getElementById('robotCheckBox');
         const gateButton = document.getElementById('gateButton');
         const gateError = document.getElementById('gateError');
+        
+        // Admin Elements
+        const adminBtn = document.getElementById('adminBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminClose = document.getElementById('adminClose');
+        const adminAuthSection = document.getElementById('adminAuthSection');
+        const adminAuthInput = document.getElementById('adminAuthInput');
+        const adminAuthButton = document.getElementById('adminAuthButton');
+        const adminMainSection = document.getElementById('adminMainSection');
+        const adminKeySection = document.getElementById('adminKeySection');
+        const disableWebsiteBtn = document.getElementById('disableWebsiteBtn');
+        const currentKeyDisplay = document.getElementById('currentKeyDisplay');
+        const copyKeyBtn = document.getElementById('copyKeyBtn');
+        const generateKeyBtn = document.getElementById('generateKeyBtn');
         
         // App Elements
         const app = document.getElementById('app');
@@ -609,12 +858,53 @@
         let passwords = [];
         let passwordsExpired = false;
         let robotVerified = false;
+        let adminAuthenticated = false;
         const correctPassword = "rbxkeysforever1";
+        
+        // Admin Security Key (initial value)
+        let adminSecurityKey = "ZKQJPRVYGMSTXFAOCHBWNIDLUEQTRPSKYZMJFGONCLHAVBDUEX";
+        
+        // Check if website is disabled
+        function checkWebsiteStatus() {
+            const isDisabled = localStorage.getItem('websiteDisabled') === 'true';
+            if (isDisabled) {
+                showDisabledMessage();
+                return true;
+            }
+            return false;
+        }
+        
+        function showDisabledMessage() {
+            gate.innerHTML = `
+                <div class="gate-container">
+                    <div class="gate-logo" style="background: linear-gradient(135deg, #fbbf24, #f87171);">!</div>
+                    <h1 class="gate-title">Website Temporarily Closed</h1>
+                    <div class="disabled-message">
+                        <h2>This website is currently closed by the administrators</h2>
+                        <p>Come back later when it's opened</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Initialize website status check
+        if (checkWebsiteStatus()) {
+            // Stop further execution if website is disabled
+            throw new Error("Website is disabled");
+        }
         
         // Gate Event Listeners
         gateForm.addEventListener('submit', handleGateSubmit);
         gatePassword.addEventListener('input', updateGateButton);
         robotCheck.addEventListener('click', toggleRobotVerification);
+        
+        // Admin Event Listeners
+        adminBtn.addEventListener('click', openAdminPanel);
+        adminClose.addEventListener('click', closeAdminPanel);
+        adminAuthButton.addEventListener('click', authenticateAdmin);
+        disableWebsiteBtn.addEventListener('click', toggleWebsiteStatus);
+        copyKeyBtn.addEventListener('click', copyAdminKey);
+        generateKeyBtn.addEventListener('click', generateNewAdminKey);
         
         // Gate Functions
         function handleGateSubmit(e) {
@@ -663,6 +953,70 @@
             gateError.classList.add('show');
         }
         
+        // Admin Functions
+        function openAdminPanel() {
+            adminPanel.classList.add('active');
+            adminAuthenticated = false;
+            adminAuthSection.style.display = 'block';
+            adminMainSection.style.display = 'none';
+            adminKeySection.style.display = 'none';
+            adminAuthInput.value = '';
+        }
+        
+        function closeAdminPanel() {
+            adminPanel.classList.remove('active');
+            adminAuthenticated = false;
+        }
+        
+        function authenticateAdmin() {
+            if (adminAuthInput.value === adminSecurityKey) {
+                adminAuthenticated = true;
+                adminAuthSection.style.display = 'none';
+                adminMainSection.style.display = 'block';
+                adminKeySection.style.display = 'block';
+                currentKeyDisplay.textContent = adminSecurityKey;
+            } else {
+                alert('Invalid admin security key');
+            }
+        }
+        
+        function toggleWebsiteStatus() {
+            const isCurrentlyDisabled = localStorage.getItem('websiteDisabled') === 'true';
+            
+            if (isCurrentlyDisabled) {
+                localStorage.setItem('websiteDisabled', 'false');
+                disableWebsiteBtn.textContent = 'Disable Website';
+                alert('Website has been enabled');
+            } else {
+                localStorage.setItem('websiteDisabled', 'true');
+                disableWebsiteBtn.textContent = 'Enable Website';
+                alert('Website has been disabled. Users will see a closure message.');
+            }
+        }
+        
+        function copyAdminKey() {
+            navigator.clipboard.writeText(adminSecurityKey).then(() => {
+                const originalText = copyKeyBtn.textContent;
+                copyKeyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyKeyBtn.textContent = originalText;
+                }, 1500);
+            });
+        }
+        
+        function generateNewAdminKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let newKey = '';
+            
+            for (let i = 0; i < 50; i++) {
+                newKey += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            adminSecurityKey = newKey;
+            currentKeyDisplay.textContent = newKey;
+            alert('New admin security key generated successfully');
+        }
+        
         // App Event Listeners
         generateBtn.addEventListener('click', generatePasswords);
         
@@ -673,16 +1027,26 @@
         function generatePasswords() {
             // Get user settings
             const count = parseInt(passwordCount.value) || 10;
-            const expiration = parseInt(expirationTime.value) || 120;
+            let expiration = parseInt(expirationTime.value) || 120;
             const type = passwordType.value;
             
-            // Validate inputs
+            // Validate inputs and apply special rules for executor keys
+            if (type === 'executor') {
+                if (count > 3) {
+                    alert('Executor keys can only be generated up to 3 at a time');
+                    passwordCount.value = 3;
+                    return;
+                }
+                expiration = 3600; // 1 hour in seconds
+                expirationTime.value = 3600;
+            }
+            
             if (count < 1 || count > 50) {
                 alert('Please enter a number between 1 and 50 for password count');
                 return;
             }
             
-            if (expiration < 30 || expiration > 600) {
+            if (type !== 'executor' && (expiration < 30 || expiration > 600)) {
                 alert('Please enter an expiration time between 30 and 600 seconds');
                 return;
             }
@@ -702,6 +1066,10 @@
             for (let i = 0; i < count; i++) {
                 if (type === 'global') {
                     passwords.push(generateGlobalKey());
+                } else if (type === 'executor') {
+                    passwords.push(generateExecutorKey());
+                } else if (type === 'numeral') {
+                    passwords.push(generateNumeralKey());
                 } else {
                     passwords.push(generatePassword());
                 }
@@ -774,6 +1142,32 @@
                 if (i < 3) {
                     key += '-';
                 }
+            }
+            
+            return key;
+        }
+        
+        // Generate an executor key (e.g., F5xEVHNoFkoAjDIrBqCCp)
+        function generateExecutorKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = '';
+            const length = 21; // Standard length for executor keys
+            
+            for (let i = 0; i < length; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return key;
+        }
+        
+        // Generate a numeral key (e.g., 123456789012)
+        function generateNumeralKey() {
+            const digits = '0123456789';
+            let key = '';
+            const length = 12; // 12-digit number
+            
+            for (let i = 0; i < length; i++) {
+                key += digits.charAt(Math.floor(Math.random() * digits.length));
             }
             
             return key;
@@ -894,11 +1288,18 @@
             timerDisplay.textContent = formatTime(expiration);
         }
         
-        // Format time as MM:SS
+        // Format time as MM:SS or HH:MM:SS for longer durations
         function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if (seconds < 3600) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
         }
         
         // Initialize the application
