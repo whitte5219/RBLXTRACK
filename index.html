@@ -213,7 +213,7 @@
         /* Admin Button */
         .admin-btn {
             position: fixed;
-            top: 32px;
+            top: 20px;
             right: 32px;
             width: 44px;
             height: 44px;
@@ -227,6 +227,7 @@
             z-index: 100;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 20px;
         }
 
         .admin-btn:hover {
@@ -617,6 +618,11 @@
             color: var(--accent);
         }
 
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .expired {
             opacity: 0.5;
             filter: grayscale(0.7);
@@ -625,6 +631,22 @@
         .expired .password-value {
             color: var(--muted);
             text-decoration: line-through;
+        }
+
+        .used {
+            opacity: 0.6;
+            filter: grayscale(0.9);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .used .password-value {
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+
+        .used .action-btn {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .status {
@@ -654,7 +676,7 @@
                 order: 1;
             }
             .admin-btn {
-                top: 18px;
+                top: 12px;
                 right: 18px;
             }
         }
@@ -700,7 +722,7 @@
 
     <!-- Admin Button -->
     <div class="admin-btn" id="adminBtn" title="Admin Panel">
-        <i class="fas fa-star"></i>
+        ⚙️
     </div>
 
     <!-- Admin Panel -->
@@ -735,6 +757,15 @@
                 <div class="admin-buttons">
                     <button class="admin-button" id="copyKeyBtn">Copy Key</button>
                     <button class="admin-button primary" id="generateKeyBtn">Generate New Key</button>
+                </div>
+            </div>
+            
+            <div id="adminPasswordSection" class="admin-section" style="display: none;">
+                <div class="admin-section-title">Website Password Management</div>
+                <div class="admin-key-display" id="currentPasswordDisplay"></div>
+                <div class="admin-buttons">
+                    <button class="admin-button" id="copyPasswordBtn">Copy Password</button>
+                    <button class="admin-button primary" id="changePasswordBtn">Change Password</button>
                 </div>
             </div>
         </div>
@@ -814,9 +845,6 @@
         </main>
     </div>
 
-    <!-- Font Awesome for the star icon -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
     <script>
         // Gate Elements
         const gate = document.getElementById('gate');
@@ -836,10 +864,14 @@
         const adminAuthButton = document.getElementById('adminAuthButton');
         const adminMainSection = document.getElementById('adminMainSection');
         const adminKeySection = document.getElementById('adminKeySection');
+        const adminPasswordSection = document.getElementById('adminPasswordSection');
         const disableWebsiteBtn = document.getElementById('disableWebsiteBtn');
         const currentKeyDisplay = document.getElementById('currentKeyDisplay');
         const copyKeyBtn = document.getElementById('copyKeyBtn');
         const generateKeyBtn = document.getElementById('generateKeyBtn');
+        const currentPasswordDisplay = document.getElementById('currentPasswordDisplay');
+        const copyPasswordBtn = document.getElementById('copyPasswordBtn');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
         
         // App Elements
         const app = document.getElementById('app');
@@ -859,7 +891,7 @@
         let passwordsExpired = false;
         let robotVerified = false;
         let adminAuthenticated = false;
-        const correctPassword = "rbxkeysforever1";
+        let correctPassword = "rbxkeysforever1";
         
         // Admin Security Key (initial value)
         let adminSecurityKey = "ZKQJPRVYGMSTXFAOCHBWNIDLUEQTRPSKYZMJFGONCLHAVBDUEX";
@@ -889,8 +921,8 @@
         
         // Initialize website status check
         if (checkWebsiteStatus()) {
-            // Stop further execution if website is disabled
-            throw new Error("Website is disabled");
+            // Keep the admin button visible even when website is disabled
+            adminBtn.style.display = 'grid';
         }
         
         // Gate Event Listeners
@@ -905,6 +937,8 @@
         disableWebsiteBtn.addEventListener('click', toggleWebsiteStatus);
         copyKeyBtn.addEventListener('click', copyAdminKey);
         generateKeyBtn.addEventListener('click', generateNewAdminKey);
+        copyPasswordBtn.addEventListener('click', copyWebsitePassword);
+        changePasswordBtn.addEventListener('click', changeWebsitePassword);
         
         // Gate Functions
         function handleGateSubmit(e) {
@@ -960,6 +994,7 @@
             adminAuthSection.style.display = 'block';
             adminMainSection.style.display = 'none';
             adminKeySection.style.display = 'none';
+            adminPasswordSection.style.display = 'none';
             adminAuthInput.value = '';
         }
         
@@ -974,7 +1009,12 @@
                 adminAuthSection.style.display = 'none';
                 adminMainSection.style.display = 'block';
                 adminKeySection.style.display = 'block';
+                adminPasswordSection.style.display = 'block';
                 currentKeyDisplay.textContent = adminSecurityKey;
+                
+                // Update website password display (masked)
+                const maskedPassword = '*'.repeat(correctPassword.length);
+                currentPasswordDisplay.textContent = maskedPassword;
             } else {
                 alert('Invalid admin security key');
             }
@@ -1015,6 +1055,26 @@
             adminSecurityKey = newKey;
             currentKeyDisplay.textContent = newKey;
             alert('New admin security key generated successfully');
+        }
+        
+        function copyWebsitePassword() {
+            navigator.clipboard.writeText(correctPassword).then(() => {
+                const originalText = copyPasswordBtn.textContent;
+                copyPasswordBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyPasswordBtn.textContent = originalText;
+                }, 1500);
+            });
+        }
+        
+        function changeWebsitePassword() {
+            const newPassword = prompt('Enter new website password:');
+            if (newPassword && newPassword.length > 0) {
+                correctPassword = newPassword;
+                const maskedPassword = '*'.repeat(correctPassword.length);
+                currentPasswordDisplay.textContent = maskedPassword;
+                alert('Website password changed successfully');
+            }
         }
         
         // App Event Listeners
@@ -1184,12 +1244,12 @@
             
             passwords.forEach((password, index) => {
                 const passwordCard = document.createElement('div');
-                passwordCard.className = `password-card ${passwordsExpired ? 'expired' : ''}`;
+                passwordCard.className = `password-card`;
                 passwordCard.innerHTML = `
                     <div class="password-value">${password}</div>
                     <div class="password-actions">
                         <button class="action-btn copy" data-index="${index}">Copy</button>
-                        <button class="action-btn use" data-index="${index}">Use</button>
+                        <button class="action-btn mark-used" data-index="${index}">Mark as Used</button>
                     </div>
                 `;
                 
@@ -1201,8 +1261,8 @@
                 btn.addEventListener('click', copyPassword);
             });
             
-            document.querySelectorAll('.action-btn.use').forEach(btn => {
-                btn.addEventListener('click', usePassword);
+            document.querySelectorAll('.action-btn.mark-used').forEach(btn => {
+                btn.addEventListener('click', markPasswordAsUsed);
             });
         }
         
@@ -1229,25 +1289,32 @@
             });
         }
         
-        // Use password (simulated action)
-        function usePassword(e) {
-            if (passwordsExpired) {
-                alert('These passwords have expired. Please generate new ones.');
-                return;
-            }
-            
+        // Mark password as used
+        function markPasswordAsUsed(e) {
             const index = parseInt(e.target.getAttribute('data-index'));
-            const password = passwords[index];
+            const passwordCard = e.target.closest('.password-card');
+            
+            // Add used class to visually mark it
+            passwordCard.classList.add('used');
+            
+            // Disable both buttons
+            const copyBtn = passwordCard.querySelector('.copy');
+            const markBtn = passwordCard.querySelector('.mark-used');
+            
+            copyBtn.disabled = true;
+            markBtn.disabled = true;
+            markBtn.textContent = 'Used';
             
             // Show temporary feedback
             const originalText = e.target.textContent;
-            e.target.textContent = 'Used!';
+            e.target.textContent = 'Marked!';
             setTimeout(() => {
-                e.target.textContent = originalText;
+                if (e.target.disabled) {
+                    e.target.textContent = 'Used';
+                } else {
+                    e.target.textContent = originalText;
+                }
             }, 1500);
-            
-            // In a real application, you would use the password for authentication
-            console.log(`Password ${password} used for authentication`);
         }
         
         // Start the countdown timer
@@ -1266,7 +1333,9 @@
                     
                     // Update UI to show expired state
                     document.querySelectorAll('.password-card').forEach(card => {
-                        card.classList.add('expired');
+                        if (!card.classList.contains('used')) {
+                            card.classList.add('expired');
+                        }
                     });
                 }
             }, 1000);
